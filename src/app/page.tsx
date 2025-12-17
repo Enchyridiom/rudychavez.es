@@ -69,11 +69,11 @@ export default function Home() {
       </div>
 
       {/* Mobile View */}
-      <div className="md:hidden bg-[#f7f3e8] relative w-full min-h-screen" data-name="rudychavez.es /home – Mobile" data-node-id="1446:1720">
-        {/* Menu Button */}
+      <div className="md:hidden bg-[#f7f3e8] relative w-full min-h-screen pb-24" data-name="rudychavez.es /home – Mobile" data-node-id="1446:1720">
+        {/* Menu Button - Sticky at Bottom */}
         <button 
           onClick={() => setMenuOpen(!menuOpen)}
-          className="absolute left-1/2 transform -translate-x-1/2 top-96 bg-[#d42b57] text-[#f7f3e8] px-10 py-4 rounded-full font-['Mint_Grotesk',sans-serif] text-base font-medium z-30" 
+          className="fixed left-1/2 transform -translate-x-1/2 bottom-6 bg-[#d42b57] text-[#f7f3e8] px-10 py-4 rounded-full font-['Mint_Grotesk',sans-serif] text-base font-medium z-30 shadow-lg" 
           data-name="menu_bar" 
           data-node-id="1446:1755"
         >
