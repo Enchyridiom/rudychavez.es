@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Mint Grotesk";
+  src: url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --primary-blue: #5576e8;
+  --primary-floral: #f7f3e8;
+  --primary-raspberry: #d42b57;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary-blue: var(--primary-blue);
+  --color-primary-floral: var(--primary-floral);
+  --color-primary-raspberry: var(--primary-raspberry);
+  --font-sans: "Mint Grotesk", system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "Mint Grotesk", system-ui, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
