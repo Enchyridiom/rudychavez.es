@@ -5,6 +5,13 @@ import { useState } from 'react';
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const menuItems = [
+    { label: 'Home', href: '#' },
+    { label: 'Proyectos', href: '#' },
+    { label: 'Sobre mi', href: '#' },
+    { label: 'Contacto', href: '#' },
+  ];
+
   return (
     <>
       {/* Desktop View */}
@@ -70,14 +77,46 @@ export default function Home() {
 
       {/* Mobile View */}
       <div className="md:hidden bg-[#f7f3e8] relative w-full min-h-screen pb-24" data-name="rudychavez.es /home – Mobile" data-node-id="1446:1720">
+        {/* Mobile Menu Modal */}
+        {menuOpen && (
+          <div 
+            className="fixed inset-0 bg-[#d42b57] z-50 rounded-2xl md:hidden flex flex-col items-center justify-between px-8 py-20 bottom-6 left-1/2 transform -translate-x-1/2 w-[calc(100%-48px)] animate-in fade-in zoom-in duration-300"
+            data-name="rudychavez.es /nav – Mobile" 
+            data-node-id="1446:1787"
+          >
+            {/* Menu Items */}
+            <div className="flex flex-col gap-6 items-center w-full">
+              {menuItems.map((item) => (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  className="font-['Mint_Grotesk',sans-serif] text-[#f7f3e8] text-2xl font-medium text-center hover:opacity-80 transition-opacity"
+                  data-node-id={item.label === 'Home' ? '1446:1788' : item.label === 'Proyectos' ? '1502:3' : item.label === 'Sobre mi' ? '1446:2027' : '1446:2029'}
+                >
+                  {item.label}
+                </a>
+              ))}
+            </div>
+
+            {/* Close Button */}
+            <button
+              onClick={() => setMenuOpen(false)}
+              className="font-['Mint_Grotesk',sans-serif] text-[#f7f3e8] text-2xl font-medium hover:opacity-80 transition-opacity"
+              data-node-id="1446:2031"
+            >
+              Cerrar
+            </button>
+          </div>
+        )}
+
         {/* Menu Button - Sticky at Bottom */}
         <button 
           onClick={() => setMenuOpen(!menuOpen)}
-          className="fixed left-1/2 transform -translate-x-1/2 bottom-6 bg-[#d42b57] text-[#f7f3e8] px-10 py-4 rounded-full font-['Mint_Grotesk',sans-serif] text-base font-medium z-30 shadow-lg" 
+          className="fixed left-1/2 transform -translate-x-1/2 bottom-6 bg-[#d42b57] text-[#f7f3e8] px-10 py-4 rounded-full font-['Mint_Grotesk',sans-serif] text-base font-medium z-30 shadow-lg hover:opacity-90 transition-opacity" 
           data-name="menu_bar" 
           data-node-id="1446:1755"
         >
-          Menu
+          {menuOpen ? 'Cerrar' : 'Menu'}
         </button>
 
         {/* Header Section */}
