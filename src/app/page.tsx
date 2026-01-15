@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { FooterDesktop, FooterMobile } from './components/Footer';
 import { NavigationMenu } from './components/NavigationMenu';
-import InfiniteScroll from 'infinite-scroll';
 
 const imgProject01 = "http://localhost:3845/assets/9cc448b6415cd3c5ccaff9fc14842bb8a364ea35.png";
 const imgProject02 = "http://localhost:3845/assets/8692216ed1fece7375dae6f69b8c2bfba2fc407b.png";
@@ -28,37 +27,40 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [displayedProjects, setDisplayedProjects] = useState(projectsData.slice(0, 5));
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const infScrollRef = useRef<InfiniteScroll | null>(null);
+  const infScrollRef = useRef<any>(null);
 
   useEffect(() => {
     if (!scrollContainerRef.current) return;
 
-    infScrollRef.current = new InfiniteScroll(scrollContainerRef.current, {
-      path: () => '',
-      responseType: 'text',
-      status: '.page-load-status',
-      history: false,
-      onInit: function() {
-        console.log('Infinite Scroll initialized');
-      },
-    });
-
-    const handleLoadMore = () => {
-      setDisplayedProjects(prev => {
-        const nextIndex = prev.length;
-        const newProjects = projectsData.slice(nextIndex, nextIndex + 5);
-        if (newProjects.length > 0) {
-          return [...prev, ...newProjects];
-        }
-        return prev;
+    // Importación dinámica de InfiniteScroll para evitar window is not defined en SSR
+    import('infinite-scroll').then(({ default: InfiniteScroll }) => {
+      infScrollRef.current = new InfiniteScroll(scrollContainerRef.current!, {
+        path: () => '',
+        responseType: 'text',
+        status: '.page-load-status',
+        history: false,
+        onInit: function() {
+          console.log('Infinite Scroll initialized');
+        },
       });
-    };
 
-    scrollContainerRef.current.addEventListener('last-scroll.infiniteScroll', handleLoadMore);
+      const handleLoadMore = () => {
+        setDisplayedProjects(prev => {
+          const nextIndex = prev.length;
+          const newProjects = projectsData.slice(nextIndex, nextIndex + 5);
+          if (newProjects.length > 0) {
+            return [...prev, ...newProjects];
+          }
+          return prev;
+        });
+      };
+
+      scrollContainerRef.current!.addEventListener('last-scroll.infiniteScroll', handleLoadMore);
+    });
 
     return () => {
       if (scrollContainerRef.current) {
-        scrollContainerRef.current.removeEventListener('last-scroll.infiniteScroll', handleLoadMore);
+        scrollContainerRef.current.removeEventListener('last-scroll.infiniteScroll', () => {});
       }
       if (infScrollRef.current) {
         infScrollRef.current.destroy();
