@@ -29,6 +29,18 @@ export default function Home() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const infScrollRef = useRef<any>(null);
 
+  const handleScrollToTop = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleScrollToBottom = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({ top: scrollContainerRef.current.scrollHeight, behavior: 'smooth' });
+    }
+  };
+
   useEffect(() => {
     if (!scrollContainerRef.current) return;
 
@@ -95,8 +107,14 @@ export default function Home() {
 
       {/* Mobile View */}
       <div className="md:hidden bg-[#f7f3e8] relative w-full min-h-screen pb-24" data-name="rudychavez.es /home – Mobile" data-node-id="1525:177">
-        {/* Navigation Menu */}
-        <NavigationMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+        {/* Navigation Menu - up/down variant for infinite scroll */}
+        <NavigationMenu 
+          menuOpen={menuOpen} 
+          setMenuOpen={setMenuOpen}
+          variant="up-down"
+          onScrollToTop={handleScrollToTop}
+          onScrollToBottom={handleScrollToBottom}
+        />
 
         {/* Header Section */}
         <div className="flex flex-col h-screen items-center justify-center px-8 py-0 bg-[#f7f3e8]" data-name="header" data-node-id="1525:178">
