@@ -7,28 +7,25 @@ import gsap from 'gsap';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { Observer } from 'gsap/all';
 
-const imgProject01 = "http://localhost:3845/assets/9cc448b6415cd3c5ccaff9fc14842bb8a364ea35.png";
-const imgProject02 = "http://localhost:3845/assets/8692216ed1fece7375dae6f69b8c2bfba2fc407b.png";
-const imgProject03 = "http://localhost:3845/assets/1c151532bb2c0724a2188b64d81a48de412a4fc1.png";
-const imgProject04 = "http://localhost:3845/assets/3b344ce9e6ed198303cf64c6daabaf4c81bf2c1b.png";
-const imgProject05 = "http://localhost:3845/assets/a20c202ba781a2580b6a253386051331d499f765.png";
+const imgProject01 = "/projects/project01/project_cover_filmin.png";
+const imgProject02 = "/projects/project02/project_cover_zumo de fetos.png";
+const imgProject03 = "/projects/project03/project_cover_rainbox.png";
 
 const projectsData = [
   { id: 1, title: "Filmin", image: imgProject01, rotation: 0 },
-  { id: 2, title: "Rainbox", image: imgProject02, rotation: 2 },
-  { id: 3, title: "Zumo de Fetos", image: imgProject03, rotation: 1 },
-  { id: 4, title: "Antes del Sí", image: imgProject04, rotation: -2 },
-  { id: 5, title: "Project NQ", image: imgProject05, rotation: 0 },
-  { id: 6, title: "Filmin", image: imgProject01, rotation: 1 },
-  { id: 7, title: "Rainbox", image: imgProject02, rotation: -1 },
-  { id: 8, title: "Zumo de Fetos", image: imgProject03, rotation: 2 },
-  { id: 9, title: "Antes del Sí", image: imgProject04, rotation: -2 },
-  { id: 10, title: "Project NQ", image: imgProject05, rotation: 1 },
+  { id: 2, title: "Zumo de Fetos", image: imgProject02, rotation: 2 },
+  { id: 3, title: "Rainbox", image: imgProject03, rotation: 1 },
+  { id: 4, title: "Filmin", image: imgProject01, rotation: -2 },
+  { id: 5, title: "Zumo de Fetos", image: imgProject02, rotation: 0 },
+  { id: 6, title: "Rainbox", image: imgProject03, rotation: 1 },
+  { id: 7, title: "Filmin", image: imgProject01, rotation: -1 },
+  { id: 8, title: "Zumo de Fetos", image: imgProject02, rotation: 2 },
+  { id: 9, title: "Rainbox", image: imgProject03, rotation: -2 },
 ];
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [displayedProjects, setDisplayedProjects] = useState(projectsData.slice(0, 5));
+  const [displayedProjects, setDisplayedProjects] = useState(projectsData.slice(0, 3));
   const [currentPanel, setCurrentPanel] = useState(0);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const infScrollRef = useRef<any>(null);
