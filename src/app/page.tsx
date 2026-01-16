@@ -3,6 +3,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { FooterDesktop, FooterMobile } from './components/Footer';
 import { NavigationMenu } from './components/NavigationMenu';
+import gsap from 'gsap';
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
+import { Observer } from 'gsap/all';
 
 const imgProject01 = "http://localhost:3845/assets/9cc448b6415cd3c5ccaff9fc14842bb8a364ea35.png";
 const imgProject02 = "http://localhost:3845/assets/8692216ed1fece7375dae6f69b8c2bfba2fc407b.png";
@@ -26,21 +29,92 @@ const projectsData = [
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [displayedProjects, setDisplayedProjects] = useState(projectsData.slice(0, 5));
+  const [currentPanel, setCurrentPanel] = useState(0);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const infScrollRef = useRef<any>(null);
+  const isAnimatingRef = useRef(false);
+  const mobileContainerRef = useRef<HTMLDivElement>(null);
+  const observerRef = useRef<any>(null);
+
+  // Registrar plugins GSAP
+  useEffect(() => {
+    gsap.registerPlugin(ScrollToPlugin, Observer);
+  }, []);
+
+  const gotoPanel = (index: number) => {
+    if (isAnimatingRef.current) return;
+    if (index < 0 || index > 2) return;
+
+    isAnimatingRef.current = true;
+    setCurrentPanel(index);
+
+    const container = mobileContainerRef.current;
+    if (!container) return;
+
+    gsap.to(container, {
+      scrollTo: { y: index * window.innerHeight, autoKill: false },
+      duration: 0.7,
+      ease: 'power2.inOut',
+      onComplete: () => {
+        isAnimatingRef.current = false;
+      }
+    });
+  };
 
   const handleScrollToTop = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    gotoPanel(0);
   };
 
   const handleScrollToBottom = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTo({ top: scrollContainerRef.current.scrollHeight, behavior: 'smooth' });
-    }
+    gotoPanel(2);
   };
 
+  // Setup GSAP Observer para panel snap en mobile
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.innerWidth >= 1024) return; // Solo en mobile
+
+    const projectsPanel = scrollContainerRef.current;
+    if (!projectsPanel) return;
+
+    observerRef.current = Observer.create({
+      target: mobileContainerRef.current,
+      type: 'wheel,touch',
+      onUp: () => {
+        if (isAnimatingRef.current) return;
+        
+        // Si estamos en projects y no está en el top, no cambiar panel
+        if (currentPanel === 1 && projectsPanel.scrollTop > 0) {
+          return;
+        }
+        
+        gotoPanel(currentPanel - 1);
+      },
+      onDown: () => {
+        if (isAnimatingRef.current) return;
+        
+        // Si estamos en projects y no está en el bottom, no cambiar panel
+        if (currentPanel === 1) {
+          const isAtBottom = projectsPanel.scrollHeight - projectsPanel.scrollTop <= projectsPanel.clientHeight + 10;
+          if (!isAtBottom) {
+            return;
+          }
+        }
+        
+        gotoPanel(currentPanel + 1);
+      },
+      tolerance: 10,
+      preventDefault: true,
+    });
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.kill();
+      }
+    };
+  }, [currentPanel]);
+
+  // Setup infinite scroll
   useEffect(() => {
     if (!scrollContainerRef.current) return;
 
@@ -106,8 +180,13 @@ export default function Home() {
       </div>
 
       {/* Mobile View */}
-      <div className="md:hidden bg-[#f7f3e8] relative w-full min-h-screen pb-24" data-name="rudychavez.es /home – Mobile" data-node-id="1525:177">
-        {/* Navigation Menu - up/down variant for infinite scroll */}
+      <div 
+        ref={mobileContainerRef}
+        className="md:hidden bg-[#f7f3e8] relative w-full h-[100svh] overflow-y-auto snap-y snap-mandatory" 
+        data-name="rudychavez.es /home – Mobile" 
+        data-node-id="1525:177"
+      >
+        {/* Navigation Menu - up/down variant for panel snap */}
         <NavigationMenu 
           menuOpen={menuOpen} 
           setMenuOpen={setMenuOpen}
@@ -116,8 +195,13 @@ export default function Home() {
           onScrollToBottom={handleScrollToBottom}
         />
 
-        {/* Header Section */}
-        <div className="flex flex-col h-screen items-center justify-center px-8 py-0 bg-[#f7f3e8]" data-name="header" data-node-id="1525:178">
+        {/* Panel 1: Header Section */}
+        <div 
+          id="header" 
+          className="flex flex-col h-[100svh] items-center justify-center px-8 py-0 bg-[#f7f3e8] snap-start snap-always" 
+          data-name="header" 
+          data-node-id="1525:178"
+        >
           <div className="flex items-center justify-center" data-name="h1" data-node-id="1525:179">
             <h1 className="font-['Mint_Grotesk',sans-serif] text-[#5576e8] text-8xl text-center leading-tight" data-node-id="1525:180">
               <div>rudy</div>
@@ -126,10 +210,11 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Projects Infinite Scroll Section */}
+        {/* Panel 2: Projects Infinite Scroll Section */}
         <div 
+          id="projects"
           ref={scrollContainerRef}
-          className="h-screen bg-[#f7f3e8] overflow-y-auto flex flex-col gap-4 items-center py-8 px-2.5" 
+          className="h-[100svh] bg-[#f7f3e8] overflow-y-auto flex flex-col gap-4 items-center py-8 px-2.5 snap-start snap-always" 
           data-name="scroll" 
           data-node-id="1525:1039"
         >
@@ -149,8 +234,10 @@ export default function Home() {
           <div className="page-load-status" data-text="Cargando..."></div>
         </div>
 
-        {/* Footer Section */}
-        <FooterMobile className="bg-[#d42b57] text-[#f7f3e8] font-['Mint_Grotesk',sans-serif] overflow-hidden relative h-screen" />
+        {/* Panel 3: Footer Section */}
+        <div id="footer" className="h-[100svh] snap-start snap-always">
+          <FooterMobile className="bg-[#d42b57] text-[#f7f3e8] font-['Mint_Grotesk',sans-serif] overflow-hidden relative h-full" />
+        </div>
       </div>
     </>
   );

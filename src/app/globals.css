@@ -36,10 +36,22 @@ body {
   font-family: "Mint Grotesk", system-ui, sans-serif;
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
 }
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+/* Mobile panel snap - disable native scroll snap on desktop */
+@media (min-width: 1024px) {
+  .snap-y {
+    scroll-snap-type: none !important;
+  }
+  .snap-start {
+    scroll-snap-align: none !important;
+  }
 }
 
 /* Mobile Menu Animations */
