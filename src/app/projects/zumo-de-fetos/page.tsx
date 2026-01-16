@@ -4,32 +4,32 @@ import { useState } from 'react';
 import { FooterDesktop, FooterMobile } from '../../components/Footer';
 import { NavigationMenu } from '../../components/NavigationMenu';
 
-const imgFondoGalaxiaSmall1 = "http://localhost:3845/assets/e6ed01b188bbabfae71969eab6045d957f38b8ce.png";
-const imgImg7489 = "http://localhost:3845/assets/461557d8858972c7ad087bd74d3e728a7c103362.png";
-const imgLogoPortada1 = "http://localhost:3845/assets/a712d7e007c14436b75b649428e99022ebb534cb.png";
-const imgImg7480 = "http://localhost:3845/assets/a7aa777341fc3e7d1d632e1586e9ddd40d62903a.png";
-const imgZdfFotoCajasLateral = "http://localhost:3845/assets/15dfd11525eb9ba9b3d82057ffd5b4ae39d7e3e9.png";
-const imgZdfFotoPlanoGeneralCajasApiladas = "http://localhost:3845/assets/16862e7c42af9ca3040e445018837edabee6d1db.png";
-const imgImg7490 = "http://localhost:3845/assets/a77cf454902651af6cecc5970cc7e093c6e1f07f.png";
-const imgZdfFotoMontajeMockup = "http://localhost:3845/assets/8ec621d5a8f898d488493e569976b20d9627484b.png";
-const imgZdfFotoPlanoGeneralCajasFrontal = "http://localhost:3845/assets/297c6c36568ebb92a414934f57a08bc336848245.png";
-const imgZdfFotoJuegosApilados = "http://localhost:3845/assets/1c151532bb2c0724a2188b64d81a48de412a4fc1.png";
-const imgCroquisZdf11 = "http://localhost:3845/assets/30eaa80ebac03baa746ceee2f30b19723fc0b1a6.png";
-const imgScreenshot20260110At1646571 = "http://localhost:3845/assets/8acd9cf6c93c571d27eecf7fff38de29ff47bcf0.png";
-const imgScreenshot20260110At1643411 = "http://localhost:3845/assets/3e5346ec84d1a9d1ff47eeccafa900f680c26830.png";
-const imgImg39751 = "http://localhost:3845/assets/6b22cf6f61fa5f5298a9ee8e2d2c51af9b559467.png";
-const imgPlancha1 = "http://localhost:3845/assets/33d9ff4669bb55901d80d42d6fe31b2f6b315ad1.png";
-const imgImg2408 = "http://localhost:3845/assets/1cb75b4def5e3a595e3f110b47d023c5719c1484.png";
-const imgAnversoCaja2X1 = "http://localhost:3845/assets/cb96aa7404c9057c040c79203da77777a5fd1401.png";
-const imgPlancha11 = "http://localhost:3845/assets/196fe30dacf664fc6c6de54b7b338969c72b45f2.png";
-const imgAnverso4X2 = "http://localhost:3845/assets/3e30464019dc5320656fd1620e3d3df5638617a3.png";
-const imgReverso12 = "http://localhost:3845/assets/b87806864ce13d268f8113f572b719f16c8b798e.png";
-const imgZdfFotoPlanoMedioJuegoDesplegado = "http://localhost:3845/assets/3131708038181ce396db6d51507192995b978f30.png";
-const imgZdfFotoContraportadaFrontal1 = "http://localhost:3845/assets/d7421b25979b32d9359e3ca2fa7fe23c2dee00b8.png";
-const imgZdfFotoPortadaFrontal = "http://localhost:3845/assets/848951e3d6282fc98e2c1a74852bc2720e65ce3a.png";
-const imgZdfFotoPresentacionCartas = "http://localhost:3845/assets/9d3d313fe73cfb5c574b33f17731f725e7283a24.png";
-const imgZdfFotoPlanoGeneralJuegoDesplegado = "http://localhost:3845/assets/f6ed1c943dbe0d9887d9642cc186a349fcfd2a65.png";
-const imgImg7548 = "http://localhost:3845/assets/df6f23c48ce370b5a3400ebe72badcc9d4cf76fa.png";
+const imgFondoGalaxiaSmall1 = "/assets/e6ed01b188bbabfae71969eab6045d957f38b8ce.png";
+const imgImg7489 = "/assets/461557d8858972c7ad087bd74d3e728a7c103362.png";
+const imgLogoPortada1 = "/assets/a712d7e007c14436b75b649428e99022ebb534cb.png";
+const imgImg7480 = "/assets/a7aa777341fc3e7d1d632e1586e9ddd40d62903a.png";
+const imgZdfFotoCajasLateral = "/assets/15dfd11525eb9ba9b3d82057ffd5b4ae39d7e3e9.png";
+const imgZdfFotoPlanoGeneralCajasApiladas = "/assets/16862e7c42af9ca3040e445018837edabee6d1db.png";
+const imgImg7490 = "/assets/a77cf454902651af6cecc5970cc7e093c6e1f07f.png";
+const imgZdfFotoMontajeMockup = "/assets/8ec621d5a8f898d488493e569976b20d9627484b.png";
+const imgZdfFotoPlanoGeneralCajasFrontal = "/assets/297c6c36568ebb92a414934f57a08bc336848245.png";
+const imgZdfFotoJuegosApilados = "/assets/1c151532bb2c0724a2188b64d81a48de412a4fc1.png";
+const imgCroquisZdf11 = "/assets/30eaa80ebac03baa746ceee2f30b19723fc0b1a6.png";
+const imgScreenshot20260110At1646571 = "/assets/8acd9cf6c93c571d27eecf7fff38de29ff47bcf0.png";
+const imgScreenshot20260110At1643411 = "/assets/3e5346ec84d1a9d1ff47eeccafa900f680c26830.png";
+const imgImg39751 = "/assets/6b22cf6f61fa5f5298a9ee8e2d2c51af9b559467.png";
+const imgPlancha1 = "/assets/33d9ff4669bb55901d80d42d6fe31b2f6b315ad1.png";
+const imgImg2408 = "/assets/1cb75b4def5e3a595e3f110b47d023c5719c1484.png";
+const imgAnversoCaja2X1 = "/assets/cb96aa7404c9057c040c79203da77777a5fd1401.png";
+const imgPlancha11 = "/assets/196fe30dacf664fc6c6de54b7b338969c72b45f2.png";
+const imgAnverso4X2 = "/assets/3e30464019dc5320656fd1620e3d3df5638617a3.png";
+const imgReverso12 = "/assets/b87806864ce13d268f8113f572b719f16c8b798e.png";
+const imgZdfFotoPlanoMedioJuegoDesplegado = "/assets/3131708038181ce396db6d51507192995b978f30.png";
+const imgZdfFotoContraportadaFrontal1 = "/assets/d7421b25979b32d9359e3ca2fa7fe23c2dee00b8.png";
+const imgZdfFotoPortadaFrontal = "/assets/848951e3d6282fc98e2c1a74852bc2720e65ce3a.png";
+const imgZdfFotoPresentacionCartas = "/assets/9d3d313fe73cfb5c574b33f17731f725e7283a24.png";
+const imgZdfFotoPlanoGeneralJuegoDesplegado = "/assets/f6ed1c943dbe0d9887d9642cc186a349fcfd2a65.png";
+const imgImg7548 = "/assets/df6f23c48ce370b5a3400ebe72badcc9d4cf76fa.png";
 
 export default function ZumoDeFetosPage() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -143,7 +143,7 @@ export default function ZumoDeFetosPage() {
       {/* Mobile View */}
       <div className="md:hidden bg-[#f7f3e8] relative w-full min-h-screen pb-24">
         {/* Navigation Menu */}
-        <NavigationMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+        <NavigationMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} variant="full" />
 
         {/* Header and Content from Figma Mobile Design */}
         <div className="overflow-y-auto pb-32">
