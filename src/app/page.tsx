@@ -1,5 +1,36 @@
 'use client';
 
+/**
+ * HOME PAGE - Sistema de Navegación por Paneles (Mobile)
+ * 
+ * Estructura: 3 secciones a pantalla completa (100svh):
+ *   1) #header - Título y marca
+ *   2) #projects - Scroll infinito interno
+ *   3) #footer - Información de contacto
+ * 
+ * Navegación:
+ *   - HEADER: 
+ *     • Flecha ↓ / Scroll down → navega a #projects
+ *     • Flecha ↑ / Scroll up → feedback visual de límite superior (no navega)
+ *   
+ *   - PROJECTS:
+ *     • Scroll vertical → scroll infinito INTERNO (NO cambia de sección)
+ *     • Flecha ↑ → navega a #header (programático)
+ *     • Flecha ↓ → navega a #footer (programático)
+ *   
+ *   - FOOTER:
+ *     • Flecha ↑ / Scroll up → navega a #projects
+ *     • Flecha ↓ / Scroll down → feedback visual de límite inferior (no navega)
+ * 
+ * Implementación técnica:
+ *   - GSAP Observer captura scroll/touch en #header y #footer
+ *   - #projects NO tiene Observer → scroll nativo para infinite scroll
+ *   - Navegación entre secciones: gotoSection() con GSAP ScrollToPlugin
+ *   - Feedback de límites: showLimitFeedback() con micro-animación bounce
+ *   - Control de estado: isAnimatingRef bloquea input durante transiciones
+ *   - Desktop (>=1024px): desactiva todo, scroll normal
+ */
+
 import { useState, useEffect, useRef } from 'react';
 import { FooterDesktop, FooterMobile } from './components/Footer';
 import { NavigationMenu } from './components/NavigationMenu';
@@ -38,7 +69,8 @@ export default function Home() {
     gsap.registerPlugin(ScrollToPlugin, Observer);
   }, []);
 
-  const gotoPanel = (index: number) => {
+  // Navegar a una sección específica con animación GSAP
+  const gotoSection = (index: number) => {
     if (isAnimatingRef.current) return;
     if (index < 0 || index > 2) return;
 
@@ -58,56 +90,109 @@ export default function Home() {
     });
   };
 
+  // Feedback visual de límite (micro-animación bounce)
+  const showLimitFeedback = (direction: 'up' | 'down') => {
+    const container = mobileContainerRef.current;
+    if (!container || isAnimatingRef.current) return;
+
+    const currentScroll = container.scrollTop;
+    const offset = direction === 'up' ? -20 : 20;
+
+    gsap.to(container, {
+      scrollTop: currentScroll + offset,
+      duration: 0.15,
+      ease: 'power2.out',
+      onComplete: () => {
+        gsap.to(container, {
+          scrollTop: currentScroll,
+          duration: 0.15,
+          ease: 'power2.in'
+        });
+      }
+    });
+  };
+
+  // Handlers para las flechas del menú
   const handleScrollToTop = () => {
-    gotoPanel(0);
+    if (currentPanel === 1) {
+      // Desde projects, ir a header
+      gotoSection(0);
+    } else if (currentPanel === 2) {
+      // Desde footer, ir a projects
+      gotoSection(1);
+    } else if (currentPanel === 0) {
+      // En header, mostrar feedback de límite superior
+      showLimitFeedback('up');
+    }
   };
 
   const handleScrollToBottom = () => {
-    gotoPanel(2);
+    if (currentPanel === 1) {
+      // Desde projects, ir a footer
+      gotoSection(2);
+    } else if (currentPanel === 0) {
+      // Desde header, ir a projects
+      gotoSection(1);
+    } else if (currentPanel === 2) {
+      // En footer, mostrar feedback de límite inferior
+      showLimitFeedback('down');
+    }
   };
 
   // Setup GSAP Observer para panel snap en mobile
+  // IMPORTANTE: Solo intercepta scroll en HEADER (#header) y FOOTER (#footer)
+  // En PROJECTS (#projects), el scroll es nativo/infinito y NO cambia de sección
   useEffect(() => {
     if (typeof window === 'undefined') return;
     if (window.innerWidth >= 1024) return; // Solo en mobile
 
     const projectsPanel = scrollContainerRef.current;
-    if (!projectsPanel) return;
+    const headerPanel = document.getElementById('header');
+    const footerPanel = document.getElementById('footer');
+    if (!projectsPanel || !headerPanel || !footerPanel) return;
 
-    observerRef.current = Observer.create({
-      target: mobileContainerRef.current,
+    // Observer para HEADER: solo captura scroll/touch vertical
+    const headerObserver = Observer.create({
+      target: headerPanel,
       type: 'wheel,touch',
       onUp: () => {
-        if (isAnimatingRef.current) return;
-        
-        // Si estamos en projects y no está en el top, no cambiar panel
-        if (currentPanel === 1 && projectsPanel.scrollTop > 0) {
-          return;
-        }
-        
-        gotoPanel(currentPanel - 1);
+        if (isAnimatingRef.current || currentPanel !== 0) return;
+        // En el límite superior, mostrar feedback
+        showLimitFeedback('up');
       },
       onDown: () => {
-        if (isAnimatingRef.current) return;
-        
-        // Si estamos en projects y no está en el bottom, no cambiar panel
-        if (currentPanel === 1) {
-          const isAtBottom = projectsPanel.scrollHeight - projectsPanel.scrollTop <= projectsPanel.clientHeight + 10;
-          if (!isAtBottom) {
-            return;
-          }
-        }
-        
-        gotoPanel(currentPanel + 1);
+        if (isAnimatingRef.current || currentPanel !== 0) return;
+        // Navegar a projects
+        gotoSection(1);
       },
       tolerance: 10,
       preventDefault: true,
     });
 
+    // Observer para FOOTER: solo captura scroll/touch vertical
+    const footerObserver = Observer.create({
+      target: footerPanel,
+      type: 'wheel,touch',
+      onUp: () => {
+        if (isAnimatingRef.current || currentPanel !== 2) return;
+        // Navegar a projects
+        gotoSection(1);
+      },
+      onDown: () => {
+        if (isAnimatingRef.current || currentPanel !== 2) return;
+        // En el límite inferior, mostrar feedback
+        showLimitFeedback('down');
+      },
+      tolerance: 10,
+      preventDefault: true,
+    });
+
+    // PROJECTS: NO tiene Observer, el scroll es nativo
+    // La navegación entre secciones desde projects solo ocurre por las flechas
+
     return () => {
-      if (observerRef.current) {
-        observerRef.current.kill();
-      }
+      headerObserver?.kill();
+      footerObserver?.kill();
     };
   }, [currentPanel]);
 
