@@ -1,157 +1,132 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { FooterDesktop, FooterMobile } from './components/Footer';
-import { NavigationMenu } from './components/NavigationMenu';
+import { useMemo, useRef, useState } from 'react';
+
 import Header from './components/Header';
 import ProjectsLoop from './components/ProjectsLoop';
-import gsap from 'gsap';
-import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
+import { FooterDesktop, FooterMobile } from './components/Footer';
 
-const imgProject01 = "/projects/filmin/project_cover_filmin.png";
-const imgProject02 = "/projects/zumo-de-fetos/project_cover_zumo-de-fetos.png";
-const imgProject03 = "/projects/rainbox/project_cover_rainbox.png";
+type Project = {
+  id: number;
+  title: string;
+  slug: string;
+  image: string;
+  rotation: number;
+};
 
-const projectsData = [
-  { id: 1, title: "Filmin", slug: "filmin", image: imgProject01, rotation: 0 },
-  { id: 2, title: "Zumo de Fetos", slug: "zumo-de-fetos", image: imgProject02, rotation: 2 },
-  { id: 3, title: "Rainbox", slug: "rainbox", image: imgProject03, rotation: 1 },
-  { id: 4, title: "Filmin", slug: "filmin", image: imgProject01, rotation: -2 },
-  { id: 5, title: "Zumo de Fetos", slug: "zumo-de-fetos", image: imgProject02, rotation: 0 },
-  { id: 6, title: "Rainbox", slug: "rainbox", image: imgProject03, rotation: 1 },
-  { id: 7, title: "Filmin", slug: "filmin", image: imgProject01, rotation: -1 },
-  { id: 8, title: "Zumo de Fetos", slug: "zumo-de-fetos", image: imgProject02, rotation: 2 },
-  { id: 9, title: "Rainbox", slug: "rainbox", image: imgProject03, rotation: -2 },
-];
+const imgProject01 = '/projects/project01/project_cover_filmin.png';
+const imgProject02 = '/projects/project02/project_cover_zumo-de-fetos.png';
+const imgProject03 = '/projects/project03/project_cover_rainbox.png';
 
 export default function Home() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [currentPanel, setCurrentPanel] = useState(0);
-  const isAnimatingRef = useRef(false);
-  const mobileContainerRef = useRef<HTMLDivElement>(null);
-  const limitBounceTweenRef = useRef<gsap.core.Tween | null>(null);
+  const [currentPanel, setCurrentPanel] = useState<0 | 1 | 2>(0);
+  const panelsWrapperRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    gsap.registerPlugin(ScrollToPlugin);
-  }, []);
-
-  const gotoSection = (index: number) => {
-    if (isAnimatingRef.current) return;
-    if (index < 0 || index > 2) return;
-
-    const container = mobileContainerRef.current;
-    if (!container) return;
-
-    isAnimatingRef.current = true;
-    setCurrentPanel(index);
-
-    const panelHeight = container.getBoundingClientRect().height;
-
-    gsap.to(container, {
-      scrollTo: { y: index * panelHeight, autoKill: false },
-      duration: 0.7,
-      ease: 'power2.inOut',
-      onComplete: () => {
-        isAnimatingRef.current = false;
-      }
-    });
-  };
-
-  const showLimitFeedback = (direction: 'up' | 'down') => {
-    if (isAnimatingRef.current) return;
-
-    const targetEl =
-      currentPanel === 0 ? document.getElementById('header') :
-      currentPanel === 2 ? document.getElementById('footer') :
-      null;
-
-    if (!targetEl) return;
-
-    if (limitBounceTweenRef.current && limitBounceTweenRef.current.isActive()) return;
-
-    const offset = direction === 'up' ? 14 : -14;
-
-    limitBounceTweenRef.current = gsap.fromTo(
-      targetEl,
-      { y: 0 },
+  const projectsData: Project[] = useMemo(
+    () => [
       {
-        y: offset,
-        duration: 0.12,
-        ease: 'power2.out',
-        yoyo: true,
-        repeat: 1,
-        clearProps: 'transform',
-      }
-    );
+        id: 1,
+        title: 'Filmin',
+        slug: 'filmin',
+        image: imgProject01,
+        rotation: -2,
+      },
+      {
+        id: 2,
+        title: 'Zumo de fetos',
+        slug: 'zumo-de-fetos',
+        image: imgProject02,
+        rotation: 1,
+      },
+      {
+        id: 3,
+        title: 'Rainbox',
+        slug: 'rainbox',
+        image: imgProject03,
+        rotation: -1,
+      },
+    ],
+    []
+  );
+
+  const gotoPanel = (next: 0 | 1 | 2) => {
+    setCurrentPanel(next);
   };
 
-  const handleScrollToTop = () => {
-    if (currentPanel === 1) {
-      gotoSection(0);
-    } else if (currentPanel === 2) {
-      gotoSection(1);
-    } else if (currentPanel === 0) {
-      showLimitFeedback('up');
-    }
-  };
-
-  const handleScrollToBottom = () => {
-    if (currentPanel === 1) {
-      gotoSection(2);
-    } else if (currentPanel === 0) {
-      gotoSection(1);
-    } else if (currentPanel === 2) {
-      showLimitFeedback('down');
-    }
-  };
+  const goUp = () => gotoPanel((Math.max(0, currentPanel - 1) as 0 | 1 | 2));
+  const goDown = () => gotoPanel((Math.min(2, currentPanel + 1) as 0 | 1 | 2));
 
   return (
-    <>
-      <div className="hidden md:block bg-[#f7f3e8] relative w-full">
-        <div className="flex flex-col h-screen items-center justify-center px-8 py-0 bg-[#f7f3e8]">
-          <Header />
-        </div>
-
-        <div className="flex flex-col gap-4 h-screen items-center justify-center px-2.5 py-0 bg-[#f7f3e8]">
-          <div className="bg-[#5576e8] h-64 rounded-2xl w-96" />
-          <div className="bg-[#5576e8] h-64 rounded-2xl w-96" />
-          <div className="bg-[#5576e8] h-64 rounded-2xl w-96" />
-        </div>
-
+    <main className="bg-[#f7f3e8]">
+      <div className="hidden md:block min-h-screen bg-[#f7f3e8]">
+        <Header />
+        <section className="min-h-screen flex items-center justify-center">
+          <div className="w-full max-w-3xl px-6">
+            <ProjectsLoop projects={projectsData} />
+          </div>
+        </section>
         <FooterDesktop />
       </div>
 
-      <div 
-        ref={mobileContainerRef}
-        className="md:hidden bg-[#f7f3e8] relative w-full h-[100svh] overflow-y-auto touch-none"
-      >
-        <NavigationMenu 
-          menuOpen={menuOpen} 
-          setMenuOpen={setMenuOpen}
-          variant="up-down"
-          onScrollToTop={handleScrollToTop}
-          onScrollToBottom={handleScrollToBottom}
-        />
-
-        <div 
-          id="header" 
-          className="flex flex-col h-[100svh] items-center justify-center px-8 py-0 bg-[#f7f3e8] overscroll-contain"
+      <div className="md:hidden w-full h-[100svh] overflow-hidden touch-none bg-[#f7f3e8]">
+        <div
+          ref={panelsWrapperRef}
+          className="w-full flex flex-col transition-transform duration-500"
+          style={{
+            willChange: 'transform',
+            transform: `translateY(-${currentPanel * 100}svh)`,
+            height: '300svh',
+          }}
         >
-          <Header />
-        </div>
+          <section id="header" className="h-[100svh] w-full shrink-0">
+            <Header />
+            <div className="fixed left-4 bottom-4 z-50 flex gap-3">
+              <button
+                type="button"
+                onClick={goDown}
+                className="rounded-full bg-[#f7f3e8] text-[#2f333e] px-6 py-4"
+              >
+                ↓
+              </button>
+            </div>
+          </section>
 
-        <div 
-          id="projects"
-          className="h-[100svh] bg-[#f7f3e8] overflow-y-auto touch-pan-y overscroll-contain flex flex-col gap-4 items-center py-8 px-2.5" 
-          style={{ WebkitOverflowScrolling: 'touch' }}
-        >
-          <ProjectsLoop projects={projectsData} />
-        </div>
+          <section id="projects" className="h-[100svh] w-full shrink-0 overflow-hidden bg-[#f7f3e8]">
+            <ProjectsLoop projects={projectsData} />
+            <div className="fixed left-4 bottom-4 z-50 flex gap-3">
+              <button
+                type="button"
+                onClick={goUp}
+                className="rounded-full bg-[#f7f3e8] text-[#2f333e] px-6 py-4"
+              >
+                ↑
+              </button>
+              <button
+                type="button"
+                onClick={goDown}
+                className="rounded-full bg-[#f7f3e8] text-[#2f333e] px-6 py-4"
+              >
+                ↓
+              </button>
+            </div>
+          </section>
 
-        <div id="footer" className="h-[100svh] overscroll-contain">
-          <FooterMobile />
+          <section id="footer" className="h-[100svh] w-full shrink-0 bg-[#d42b57]">
+            <div className="w-full h-full bg-[#d42b57]">
+              <FooterMobile />
+            </div>
+            <div className="fixed left-4 bottom-4 z-50 flex gap-3">
+              <button
+                type="button"
+                onClick={goUp}
+                className="rounded-full bg-[#f7f3e8] text-[#2f333e] px-6 py-4"
+              >
+                ↑
+              </button>
+            </div>
+          </section>
         </div>
       </div>
-    </>
+    </main>
   );
 }
