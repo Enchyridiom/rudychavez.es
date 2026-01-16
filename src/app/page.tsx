@@ -1,39 +1,9 @@
 'use client';
 
-/**
- * HOME PAGE - Sistema de Navegación por Paneles (Mobile)
- * 
- * Estructura: 3 secciones a pantalla completa (100svh):
- *   1) #header - Título y marca
- *   2) #projects - Scroll infinito interno
- *   3) #footer - Información de contacto
- * 
- * Navegación:
- *   - HEADER: 
- *     • Flecha ↓ / Scroll down → navega a #projects
- *     • Flecha ↑ / Scroll up → feedback visual de límite superior (no navega)
- *   
- *   - PROJECTS:
- *     • Scroll vertical → scroll infinito INTERNO (NO cambia de sección)
- *     • Flecha ↑ → navega a #header (programático)
- *     • Flecha ↓ → navega a #footer (programático)
- *   
- *   - FOOTER:
- *     • Flecha ↑ / Scroll up → navega a #projects
- *     • Flecha ↓ / Scroll down → feedback visual de límite inferior (no navega)
- * 
- * Implementación técnica:
- *   - GSAP Observer captura scroll/touch en #header y #footer
- *   - #projects NO tiene Observer → scroll nativo para infinite scroll
- *   - Navegación entre secciones: gotoSection() con GSAP ScrollToPlugin
- *   - Feedback de límites: showLimitFeedback() con micro-animación bounce
- *   - Control de estado: isAnimatingRef bloquea input durante transiciones
- *   - Desktop (>=1024px): desactiva todo, scroll normal
- */
-
 import { useState, useEffect, useRef } from 'react';
 import { FooterDesktop, FooterMobile } from './components/Footer';
 import { NavigationMenu } from './components/NavigationMenu';
+import Header from './components/Header';
 import gsap from 'gsap';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { Observer } from 'gsap/all';
@@ -63,6 +33,8 @@ export default function Home() {
   const isAnimatingRef = useRef(false);
   const mobileContainerRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<any>(null);
+  const loadMoreHandlerRef = useRef<null | (() => void)>(null);
+  const limitBounceTweenRef = useRef<gsap.core.Tween | null>(null);
 
   // Registrar plugins GSAP
   useEffect(() => {
@@ -74,14 +46,17 @@ export default function Home() {
     if (isAnimatingRef.current) return;
     if (index < 0 || index > 2) return;
 
-    isAnimatingRef.current = true;
-    setCurrentPanel(index);
-
     const container = mobileContainerRef.current;
     if (!container) return;
 
+    isAnimatingRef.current = true;
+    setCurrentPanel(index);
+
+    // Use the container height (100svh) instead of window.innerHeight to avoid mismatch on mobile browser UI.
+    const panelHeight = container.getBoundingClientRect().height;
+
     gsap.to(container, {
-      scrollTo: { y: index * window.innerHeight, autoKill: false },
+      scrollTo: { y: index * panelHeight, autoKill: false },
       duration: 0.7,
       ease: 'power2.inOut',
       onComplete: () => {
@@ -90,26 +65,36 @@ export default function Home() {
     });
   };
 
-  // Feedback visual de límite (micro-animación bounce)
+  // Feedback visual de límite estilo iOS (rubber-band) sin mover el scroll real
   const showLimitFeedback = (direction: 'up' | 'down') => {
-    const container = mobileContainerRef.current;
-    if (!container || isAnimatingRef.current) return;
+    if (isAnimatingRef.current) return;
 
-    const currentScroll = container.scrollTop;
-    const offset = direction === 'up' ? -20 : 20;
+    // Solo tiene sentido en los límites: header (arriba) o footer (abajo)
+    const targetEl =
+      currentPanel === 0 ? document.getElementById('header') :
+      currentPanel === 2 ? document.getElementById('footer') :
+      null;
 
-    gsap.to(container, {
-      scrollTop: currentScroll + offset,
-      duration: 0.15,
-      ease: 'power2.out',
-      onComplete: () => {
-        gsap.to(container, {
-          scrollTop: currentScroll,
-          duration: 0.15,
-          ease: 'power2.in'
-        });
+    if (!targetEl) return;
+
+    // Evitar solapar bounces
+    if (limitBounceTweenRef.current && limitBounceTweenRef.current.isActive()) return;
+
+    const offset = direction === 'up' ? 14 : -14; // iOS-like: empuja en sentido contrario al intento
+
+    // Animación corta con yoyo para simular “tope” físico
+    limitBounceTweenRef.current = gsap.fromTo(
+      targetEl,
+      { y: 0 },
+      {
+        y: offset,
+        duration: 0.12,
+        ease: 'power2.out',
+        yoyo: true,
+        repeat: 1,
+        clearProps: 'transform',
       }
-    });
+    );
   };
 
   // Handlers para las flechas del menú
@@ -167,6 +152,8 @@ export default function Home() {
       },
       tolerance: 10,
       preventDefault: true,
+      ignore: '.gsap-ignore',
+      allowClicks: true,
     });
 
     // Observer para FOOTER: solo captura scroll/touch vertical
@@ -185,6 +172,8 @@ export default function Home() {
       },
       tolerance: 10,
       preventDefault: true,
+      ignore: '.gsap-ignore',
+      allowClicks: true,
     });
 
     // PROJECTS: NO tiene Observer, el scroll es nativo
@@ -223,12 +212,16 @@ export default function Home() {
         });
       };
 
+      loadMoreHandlerRef.current = handleLoadMore;
+
       scrollContainerRef.current!.addEventListener('last-scroll.infiniteScroll', handleLoadMore);
     });
 
     return () => {
       if (scrollContainerRef.current) {
-        scrollContainerRef.current.removeEventListener('last-scroll.infiniteScroll', () => {});
+        if (loadMoreHandlerRef.current) {
+          scrollContainerRef.current.removeEventListener('last-scroll.infiniteScroll', loadMoreHandlerRef.current);
+        }
       }
       if (infScrollRef.current) {
         infScrollRef.current.destroy();
@@ -242,12 +235,7 @@ export default function Home() {
       <div className="hidden md:block bg-[#f7f3e8] relative w-full" data-name="rudychavez.es /home – Desktop" data-node-id="1525:221">
         {/* Header Section */}
         <div className="flex flex-col h-screen items-center justify-center px-8 py-0 bg-[#f7f3e8]" data-name="header" data-node-id="1525:222">
-          <div className="flex items-center justify-center" data-name="h1" data-node-id="1525:223">
-            <h1 className="font-['Mint_Grotesk',sans-serif] text-[#5576e8] text-8xl text-center leading-tight" data-node-id="1525:224">
-              <div>rudy</div>
-              <div>chávez</div>
-            </h1>
-          </div>
+          <Header />
         </div>
 
         {/* Main Content Section */}
@@ -264,7 +252,7 @@ export default function Home() {
       {/* Mobile View */}
       <div 
         ref={mobileContainerRef}
-        className="md:hidden bg-[#f7f3e8] relative w-full h-[100svh] overflow-y-auto snap-y snap-mandatory" 
+        className="md:hidden bg-[#f7f3e8] relative w-full h-[100svh] overflow-y-auto touch-none" 
         data-name="rudychavez.es /home – Mobile" 
         data-node-id="1525:177"
       >
@@ -280,25 +268,21 @@ export default function Home() {
         {/* Panel 1: Header Section */}
         <div 
           id="header" 
-          className="flex flex-col h-[100svh] items-center justify-center px-8 py-0 bg-[#f7f3e8] snap-start snap-always" 
+          className="flex flex-col h-[100svh] items-center justify-center px-8 py-0 bg-[#f7f3e8] overscroll-contain" 
           data-name="header" 
           data-node-id="1525:178"
         >
-          <div className="flex items-center justify-center" data-name="h1" data-node-id="1525:179">
-            <h1 className="font-['Mint_Grotesk',sans-serif] text-[#5576e8] text-8xl text-center leading-tight" data-node-id="1525:180">
-              <div>rudy</div>
-              <div>chávez</div>
-            </h1>
-          </div>
+          <Header />
         </div>
 
         {/* Panel 2: Projects Infinite Scroll Section */}
         <div 
           id="projects"
           ref={scrollContainerRef}
-          className="h-[100svh] bg-[#f7f3e8] overflow-y-auto flex flex-col gap-4 items-center py-8 px-2.5 snap-start snap-always" 
+          className="h-[100svh] bg-[#f7f3e8] overflow-y-auto touch-pan-y overscroll-contain flex flex-col gap-4 items-center py-8 px-2.5" 
           data-name="scroll" 
           data-node-id="1525:1039"
+          style={{ WebkitOverflowScrolling: 'touch' }}
         >
           {displayedProjects.map((project) => (
             <div key={project.id} className="flex items-center justify-center relative w-96" style={{ transform: `rotate(${project.rotation}deg)` }}>
@@ -317,7 +301,7 @@ export default function Home() {
         </div>
 
         {/* Panel 3: Footer Section */}
-        <div id="footer" className="h-[100svh] snap-start snap-always">
+        <div id="footer" className="h-[100svh] overscroll-contain">
           <FooterMobile className="bg-[#d42b57] text-[#f7f3e8] font-['Mint_Grotesk',sans-serif] overflow-hidden relative h-full" />
         </div>
       </div>
