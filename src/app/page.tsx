@@ -4,12 +4,13 @@ import { useState, useEffect, useRef } from 'react';
 import { FooterDesktop, FooterMobile } from './components/Footer';
 import { NavigationMenu } from './components/NavigationMenu';
 import Header from './components/Header';
+import InfiniteScroll from './components/InfiniteScroll';
 import gsap from 'gsap';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { Observer } from 'gsap/all';
 
 const imgProject01 = "/projects/project01/project_cover_filmin.png";
-const imgProject02 = "/projects/project02/project_cover_zumo de fetos.png";
+const imgProject02 = "/projects/project02/project_cover_zumo-de-fetos.png";
 const imgProject03 = "/projects/project03/project_cover_rainbox.png";
 
 const projectsData = [
@@ -284,20 +285,7 @@ export default function Home() {
           data-node-id="1525:1039"
           style={{ WebkitOverflowScrolling: 'touch' }}
         >
-          {displayedProjects.map((project) => (
-            <div key={project.id} className="flex items-center justify-center relative w-96" style={{ transform: `rotate(${project.rotation}deg)` }}>
-              <div className="flex flex-col items-center justify-center p-2.5 relative w-96">
-                <div className="h-64 relative rounded-2xl shrink-0 w-96 overflow-hidden">
-                  <img 
-                    alt={project.title} 
-                    className="absolute inset-0 w-full h-full object-cover rounded-2xl" 
-                    src={project.image} 
-                  />
-                </div>
-              </div>
-            </div>
-          ))}
-          <div className="page-load-status" data-text="Cargando..."></div>
+          <InfiniteScroll projects={displayedProjects} />
         </div>
 
         {/* Panel 3: Footer Section */}
