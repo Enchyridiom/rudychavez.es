@@ -6,7 +6,7 @@ import Link from 'next/link';
 type Variant = 'up-down' | 'back-forward' | 'full' | 'mobile';
 
 type Props = {
-  variant: Variant;
+  variant?: Variant;
   menuOpen?: boolean;
   setMenuOpen?: Dispatch<SetStateAction<boolean>>;
   onScrollToTop?: () => void;
@@ -82,7 +82,7 @@ function NavBar({ children }: { children: ReactNode }) {
 }
 
 export function NavigationMenu({
-  variant,
+  variant = 'mobile',
   menuOpen,
   setMenuOpen,
   onScrollToTop,
