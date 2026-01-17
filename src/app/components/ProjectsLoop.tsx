@@ -45,6 +45,7 @@ export default function ProjectsLoop({ projects }: { projects: Project[] }) {
       for (const card of cards) {
         const r = card.getBoundingClientRect();
         const cardCenterY = r.top + r.height / 2;
+        const signed = (cardCenterY - centerY) / range;
         const dist = Math.abs(cardCenterY - centerY);
         const t = Math.max(0, Math.min(1, 1 - dist / range));
         const e = ease(t);
@@ -60,11 +61,14 @@ export default function ProjectsLoop({ projects }: { projects: Project[] }) {
           const p = Math.max(0, Math.min(1, (t - start) / (end - start)));
           const pe = ease(p);
 
-          const opacity = pe;
+          const opacity = pe * pe;
           const pillScale = 0.95 + (1.0 - 0.95) * pe;
 
+          const offsetMaxPx = r.height * 0.9;
+          const movePx = signed * offsetMaxPx * (1 - pe);
+
           pill.style.opacity = opacity.toFixed(3);
-          pill.style.transform = `translate(-50%, calc(-50% + 6rem)) scale(${pillScale})`;
+          pill.style.transform = `translate(-50%, -50%) translateY(${movePx.toFixed(1)}px) scale(${pillScale})`;
         }
 
         const floatWrap = card.querySelector<HTMLElement>('[data-float-wrapper]');
@@ -138,8 +142,8 @@ export default function ProjectsLoop({ projects }: { projects: Project[] }) {
             </div>
             <div
               data-title-pill
-              className="project-title-pill pointer-events-none absolute left-1/2 top-1/2"
-              style={{ opacity: 0, transform: 'translate(-50%, calc(-50% + 6rem)) scale(0.95)' }}
+              className="project-title-pill pointer-events-none absolute left-1/2 top-[65%]"
+              style={{ opacity: 0, transform: 'translate(-50%, -50%) translateY(120px) scale(0.95)' }}
             >
               <span className="project-title-pill-inner">{project.title}</span>
             </div>
@@ -172,6 +176,9 @@ export default function ProjectsLoop({ projects }: { projects: Project[] }) {
           border-radius: 9999px;
           background: #f7f3e8;
           color: #2f333e;
+        }
+        .project-media {
+          box-shadow: 0 18px 40px rgba(47, 51, 62, 0.12);
         }
       `}</style>
     </div>
