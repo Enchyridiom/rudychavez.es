@@ -4,9 +4,9 @@ import { useState } from 'react';
 import { FooterDesktop, FooterMobile } from '../components/Footer';
 import { NavigationMenu } from '../components/NavigationMenu';
 
-const imgPortfolio2023V3FotoPerfil1 = "http://localhost:3845/assets/a93168c67dfb0440978f4dae3fecd46d44458f1c.png";
-const imgImg24941 = "http://localhost:3845/assets/df5274278c9160cc81582939511bc1ce533d1fd4.png";
-const imgImg28071 = "http://localhost:3845/assets/ecca3b6afb410287fb7ed0bbf06c432c8839289e.png";
+const imgPortfolio2023V3FotoPerfil1 = "/assets/a93168c67dfb0440978f4dae3fecd46d44458f1c.png";
+const imgImg24941 = "/assets/df5274278c9160cc81582939511bc1ce533d1fd4.png";
+const imgImg28071 = "/assets/ecca3b6afb410287fb7ed0bbf06c432c8839289e.png";
 
 export default function AboutPage() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -87,7 +87,7 @@ export default function AboutPage() {
       {/* Mobile View */}
       <div className="md:hidden bg-[#f7f3e8] relative w-full min-h-screen pb-24">
         {/* Navigation Menu */}
-        <NavigationMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+        <NavigationMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} variant="full" />
 
         {/* Profile Image */}
         <div className="h-64 w-full overflow-hidden bg-gray-200">
@@ -151,7 +151,7 @@ export default function AboutPage() {
         </div>
 
         {/* Footer Mobile */}
-        <FooterMobile className="fixed bottom-0 left-0 right-0 bg-[#d42b57] h-screen text-[#f7f3e8] font-['Mint_Grotesk',sans-serif] overflow-hidden relative" />
+        <FooterMobile />
       </div>
     </>
   );

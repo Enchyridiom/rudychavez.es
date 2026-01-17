@@ -2,15 +2,30 @@
 
 @font-face {
   font-family: "Mint Grotesk";
-  src: url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
+  src: url("/fonts/MintGrotesk-Regular.woff2") format("woff2"),
+       url("/fonts/MintGrotesk-Regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Mint Grotesk";
+  src: url("/fonts/MintGrotesk-Italic.woff2") format("woff2"),
+       url("/fonts/MintGrotesk-Italic.woff") format("woff");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
 }
 
 :root {
   --background: #f7f3e8;
-  --foreground: #f7f3e8;
+  --foreground: #2f333e;
   --primary-blue: #5576e8;
   --primary-floral: #f7f3e8;
   --primary-raspberry: #d42b57;
+  --primary-gunmetal: #2f333e;
+  --primary-lima: #76e384;
 }
 
 @theme inline {
@@ -19,6 +34,8 @@
   --color-primary-blue: var(--primary-blue);
   --color-primary-floral: var(--primary-floral);
   --color-primary-raspberry: var(--primary-raspberry);
+  --color-primary-gunmetal: var(--primary-gunmetal);
+  --color-primary-lima: var(--primary-lima);
   --font-sans: "Mint Grotesk", system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
 }
@@ -26,17 +43,46 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #f7f3e8;
-    --foreground: #f7f3e8;
+    --foreground: #2f333e;
   }
 }
 
 body {
-  background: var(--primary-floral);
-  color: var(--primary-floral);
+  background: var(--background);
+  color: var(--foreground);
   font-family: "Mint Grotesk", system-ui, sans-serif;
+  font-feature-settings: "ss03" 1, "calt" 1, "liga" 1, "kern" 1;
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--primary-blue);
+}
+
+a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+a:hover {
+  color: var(--primary-blue);
+}
+
+h1 a:hover, h2 a:hover, h3 a:hover, h4 a:hover, h5 a:hover, h6 a:hover {
+  color: var(--primary-lima);
+}
+
+::selection {
+  background: transparent;
+  color: var(--primary-lima);
+}
+
+::-moz-selection {
+  background: transparent;
+  color: var(--primary-lima);
 }
 
 html {

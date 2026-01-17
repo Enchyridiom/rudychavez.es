@@ -14,7 +14,7 @@ export default function ContactPage() {
           <h1 className="font-['Mint_Grotesk',sans-serif] text-[#f7f3e8] text-8xl">Contacto</h1>
           <div className="space-y-6">
             <p className="font-['Mint_Grotesk',sans-serif] text-[#f7f3e8] text-5xl">
-              hi@rudychavez.es
+              <a href="mailto:hi@rudychavez.es">hi@rudychavez.es</a>
             </p>
             <p className="font-['Mint_Grotesk',sans-serif] text-[#f7f3e8] text-3xl">
               Si te cuadra, escríbeme
@@ -51,14 +51,14 @@ export default function ContactPage() {
       {/* Mobile View */}
       <div className="md:hidden bg-[#5576e8] relative w-full min-h-screen flex flex-col items-center justify-center py-16 px-6">
         {/* Navigation Menu */}
-        <NavigationMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+        <NavigationMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} variant="full" />
 
         {/* Content */}
         <div className="space-y-8 text-center">
           <h1 className="font-['Mint_Grotesk',sans-serif] text-[#f7f3e8] text-5xl">Contacto</h1>
           <div className="space-y-4">
             <p className="font-['Mint_Grotesk',sans-serif] text-[#f7f3e8] text-3xl">
-              hi@rudychavez.es
+              <a href="mailto:hi@rudychavez.es">hi@rudychavez.es</a>
             </p>
             <p className="font-['Mint_Grotesk',sans-serif] text-[#f7f3e8] text-xl">
               Si te cuadra, escríbeme

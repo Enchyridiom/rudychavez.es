@@ -127,7 +127,7 @@ export default function ProjectsPage() {
       {/* Mobile View */}
       <div className="md:hidden bg-[#f7f3e8] relative w-full min-h-screen pb-24">
         {/* Navigation Menu */}
-        <NavigationMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+        <NavigationMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} variant="full" />
 
         {/* Header */}
         <div className="px-6 py-8">
@@ -156,7 +156,7 @@ export default function ProjectsPage() {
         </div>
 
         {/* Footer Mobile */}
-        <FooterMobile className="fixed bottom-0 left-0 right-0 bg-[#d42b57] h-screen text-[#f7f3e8] font-['Mint_Grotesk',sans-serif] overflow-hidden relative" />
+        <FooterMobile />
       </div>
     </>
   );

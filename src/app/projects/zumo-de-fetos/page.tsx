@@ -220,7 +220,7 @@ export default function ZumoDeFetosPage() {
         </div>
 
         {/* Footer Mobile */}
-        <FooterMobile className="fixed bottom-0 left-0 right-0 bg-[#d42b57] h-screen text-[#f7f3e8] font-['Mint_Grotesk',sans-serif] overflow-hidden relative" />
+        <FooterMobile />
       </div>
     </>
   );
