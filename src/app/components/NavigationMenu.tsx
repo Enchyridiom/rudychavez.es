@@ -1,208 +1,235 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import type { Dispatch, ReactNode, SetStateAction, SyntheticEvent } from 'react';
+import Link from 'next/link';
 
-interface NavigationMenuProps {
-  menuOpen: boolean;
-  setMenuOpen: (open: boolean) => void;
-  variant?: 'full' | 'back-forward' | 'up-down';
+type Variant = 'up-down' | 'back-forward' | 'full' | 'mobile';
+
+type Props = {
+  variant: Variant;
+  menuOpen?: boolean;
+  setMenuOpen?: Dispatch<SetStateAction<boolean>>;
   onScrollToTop?: () => void;
   onScrollToBottom?: () => void;
+  onBack?: () => void;
+  onForward?: () => void;
+  tone?: 'default' | 'footer';
+};
+
+function stop(e: SyntheticEvent) {
+  e.stopPropagation();
 }
 
-function ArrowUp() {
-  return <p className="font-['Mint_Grotesk',sans-serif] text-[#f7f3e8] text-base leading-normal">↑</p>;
-}
+function ArrowButton({
+  label,
+  onClick,
+  children,
+  tone,
+}: {
+  label: string;
+  onClick?: () => void;
+  children: ReactNode;
+  tone?: 'default' | 'footer';
+}) {
+  const className =
+    tone === 'footer'
+      ? 'w-12 h-12 rounded-full bg-[#f7f3e8] text-[#d42b57] flex items-center justify-center select-none transition-colors duration-150 hover:bg-[#2f333e] hover:text-[#f7f3e8] active:bg-[#2f333e] active:text-[#f7f3e8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2f333e]'
+      : 'w-12 h-12 rounded-full bg-[#d42b57] text-[#f7f3e8] flex items-center justify-center select-none transition-colors duration-150 hover:bg-[#5576e8] active:bg-[#5576e8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5576e8]';
 
-function ArrowDown() {
-  return <p className="font-['Mint_Grotesk',sans-serif] text-[#f7f3e8] text-base leading-normal">↓</p>;
-}
-
-function ArrowBack() {
-  return <p className="font-['Mint_Grotesk',sans-serif] text-[#f7f3e8] text-base leading-normal">←</p>;
-}
-
-function ArrowForward() {
-  return <p className="font-['Mint_Grotesk',sans-serif] text-[#f7f3e8] text-base leading-normal">→</p>;
-}
-
-function NavUpDown({ menuOpen, setMenuOpen, onScrollToTop, onScrollToBottom }: any) {
   return (
-    <div className="fixed left-1/2 transform -translate-x-1/2 bottom-6 z-30 flex gap-3 items-center">
-      {/* Up Button */}
-      <button
-        onClick={onScrollToTop}
-        className="bg-[#d42b57] text-[#f7f3e8] w-[35px] h-[35px] rounded-full flex items-center justify-center hover:opacity-90 transition-opacity cursor-pointer"
-      >
-        <ArrowUp />
-      </button>
+    <button type="button" aria-label={label} onClick={onClick} className={className}>
+      <span className="font-['Mint_Grotesk',sans-serif] text-xl leading-none">{children}</span>
+    </button>
+  );
+}
 
-      {/* Menu Button */}
-      <button 
-        onClick={() => setMenuOpen(!menuOpen)}
-        className="bg-[#d42b57] text-[#f7f3e8] px-8 py-4 rounded-full font-['Mint_Grotesk',sans-serif] text-lg font-medium shadow-lg hover:opacity-90 transition-opacity" 
-      >
-        Menu
-      </button>
+function MenuButton({
+  menuOpen,
+  setMenuOpen,
+  tone,
+}: {
+  menuOpen?: boolean;
+  setMenuOpen?: Dispatch<SetStateAction<boolean>>;
+  tone?: 'default' | 'footer';
+}) {
+  const className =
+    tone === 'footer'
+      ? 'h-12 px-5 rounded-full bg-[#f7f3e8] text-[#d42b57] flex items-center justify-center select-none transition-colors duration-150 hover:bg-[#2f333e] hover:text-[#f7f3e8] active:bg-[#2f333e] active:text-[#f7f3e8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2f333e]'
+      : 'h-12 px-5 rounded-full bg-[#d42b57] text-[#f7f3e8] flex items-center justify-center select-none transition-colors duration-150 hover:bg-[#5576e8] active:bg-[#5576e8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5576e8]';
 
-      {/* Down Button */}
-      <button
-        onClick={onScrollToBottom}
-        className="bg-[#d42b57] text-[#f7f3e8] w-[35px] h-[35px] rounded-full flex items-center justify-center hover:opacity-90 transition-opacity cursor-pointer"
-      >
-        <ArrowDown />
-      </button>
+  return (
+    <button
+      type="button"
+      aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
+      onClick={() => setMenuOpen?.((v) => !v)}
+      className={className}
+    >
+      <span className="font-['Mint_Grotesk',sans-serif] text-base">Menu</span>
+    </button>
+  );
+}
+
+function NavBar({ children }: { children: ReactNode }) {
+  return (
+    <div
+      className="gsap-ignore fixed left-1/2 -translate-x-1/2 bottom-6 z-30 flex gap-3 items-center"
+      onPointerDown={stop}
+      onTouchStart={stop}
+    >
+      {children}
     </div>
   );
 }
 
-function NavBackForward({ menuOpen, setMenuOpen }: any) {
-  const router = useRouter();
-
-  return (
-    <div className="fixed left-1/2 transform -translate-x-1/2 bottom-6 z-30 flex gap-3 items-center">
-      {/* Back Button */}
-      <button
-        onClick={() => router.back()}
-        className="bg-[#d42b57] text-[#f7f3e8] w-[35px] h-[35px] rounded-full flex items-center justify-center hover:opacity-90 transition-opacity cursor-pointer"
-      >
-        <ArrowBack />
-      </button>
-
-      {/* Menu Button */}
-      <button 
-        onClick={() => setMenuOpen(!menuOpen)}
-        className="bg-[#d42b57] text-[#f7f3e8] px-8 py-4 rounded-full font-['Mint_Grotesk',sans-serif] text-lg font-medium shadow-lg hover:opacity-90 transition-opacity" 
-      >
-        Menu
-      </button>
-
-      {/* Forward Button */}
-      <button
-        onClick={() => router.forward()}
-        className="bg-[#d42b57] text-[#f7f3e8] w-[35px] h-[35px] rounded-full flex items-center justify-center hover:opacity-90 transition-opacity cursor-pointer"
-      >
-        <ArrowForward />
-      </button>
-    </div>
-  );
-}
-
-function NavFull({ menuOpen, setMenuOpen, onScrollToTop, onScrollToBottom }: any) {
-  const router = useRouter();
-
-  return (
-    <div className="fixed left-1/2 transform -translate-x-1/2 bottom-6 z-30 flex gap-3 items-center">
-      {/* Up Button */}
-      <button
-        onClick={onScrollToTop}
-        className="bg-[#d42b57] text-[#f7f3e8] w-[35px] h-[35px] rounded-full flex items-center justify-center hover:opacity-90 transition-opacity cursor-pointer"
-      >
-        <ArrowUp />
-      </button>
-
-      {/* Back Button */}
-      <button
-        onClick={() => router.back()}
-        className="bg-[#d42b57] text-[#f7f3e8] w-[35px] h-[35px] rounded-full flex items-center justify-center hover:opacity-90 transition-opacity cursor-pointer"
-      >
-        <ArrowBack />
-      </button>
-
-      {/* Menu Button */}
-      <button 
-        onClick={() => setMenuOpen(!menuOpen)}
-        className="bg-[#d42b57] text-[#f7f3e8] px-8 py-4 rounded-full font-['Mint_Grotesk',sans-serif] text-lg font-medium shadow-lg hover:opacity-90 transition-opacity" 
-      >
-        Menu
-      </button>
-
-      {/* Forward Button */}
-      <button
-        onClick={() => router.forward()}
-        className="bg-[#d42b57] text-[#f7f3e8] w-[35px] h-[35px] rounded-full flex items-center justify-center hover:opacity-90 transition-opacity cursor-pointer"
-      >
-        <ArrowForward />
-      </button>
-
-      {/* Down Button */}
-      <button
-        onClick={onScrollToBottom}
-        className="bg-[#d42b57] text-[#f7f3e8] w-[35px] h-[35px] rounded-full flex items-center justify-center hover:opacity-90 transition-opacity cursor-pointer"
-      >
-        <ArrowDown />
-      </button>
-    </div>
-  );
-}
-
-export function NavigationMenu({ 
-  menuOpen, 
-  setMenuOpen, 
-  variant = 'back-forward',
+export function NavigationMenu({
+  variant,
+  menuOpen,
+  setMenuOpen,
   onScrollToTop,
   onScrollToBottom,
-}: NavigationMenuProps) {
-  const menuItems = [
-    { label: 'Home', href: '/' },
-    { label: 'Proyectos', href: '/projects' },
-    { label: 'Sobre mi', href: '/about' },
-    { label: 'Contacto', href: '/contact' },
-  ];
+  onBack,
+  onForward,
+  tone,
+}: Props) {
+  const effectiveVariant: Exclude<Variant, 'mobile'> = variant === 'mobile' ? 'up-down' : variant;
 
   return (
     <>
-      {/* Navigation Bar - varies by variant */}
-      {variant === 'full' && (
-        <NavFull 
-          menuOpen={menuOpen} 
-          setMenuOpen={setMenuOpen}
-          onScrollToTop={onScrollToTop}
-          onScrollToBottom={onScrollToBottom}
-        />
-      )}
-
-      {variant === 'back-forward' && (
-        <NavBackForward 
-          menuOpen={menuOpen} 
-          setMenuOpen={setMenuOpen}
-        />
-      )}
-
-      {variant === 'up-down' && (
-        <NavUpDown 
-          menuOpen={menuOpen} 
-          setMenuOpen={setMenuOpen}
-          onScrollToTop={onScrollToTop}
-          onScrollToBottom={onScrollToBottom}
-        />
-      )}
-
-      {/* Mobile Menu Modal */}
-      {menuOpen && (
-        <div 
-          className="fixed inset-0 bg-[#d42b57] z-50 rounded-2xl md:hidden flex flex-col items-center justify-between px-8 py-20 bottom-6 left-1/2 transform -translate-x-1/2 w-[calc(100%-48px)] animate-in fade-in zoom-in duration-300"
+      {menuOpen ? (
+        <div
+          className="gsap-ignore fixed inset-0 bg-[#d42b57] z-50"
+          onPointerDown={stop}
+          onTouchStart={stop}
         >
-          <div className="flex flex-col gap-6 items-center w-full">
-            {menuItems.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                className="font-['Mint_Grotesk',sans-serif] text-[#f7f3e8] text-2xl font-medium text-center hover:opacity-80 transition-opacity"
-                onClick={() => setMenuOpen(false)}
-              >
-                {item.label}
-              </a>
-            ))}
-          </div>
+          <div className="h-full w-full flex items-center justify-center px-8">
+            <div className="w-full max-w-sm flex flex-col items-center gap-8">
+              <nav className="w-full">
+                <ul className="w-full flex flex-col items-center gap-6 text-[#f7f3e8]">
+                  <li>
+                    <Link
+                      href="/"
+                      className="font-['Mint_Grotesk',sans-serif] text-4xl underline underline-offset-4 hover:text-[#76e384]"
+                      onClick={() => setMenuOpen?.(false)}
+                    >
+                      Home
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/projects"
+                      className="font-['Mint_Grotesk',sans-serif] text-4xl underline underline-offset-4 hover:text-[#76e384]"
+                      onClick={() => setMenuOpen?.(false)}
+                    >
+                      Proyectos
+                    </Link>
+                  </li>
+                </ul>
 
-          <button
-            onClick={() => setMenuOpen(false)}
-            className="font-['Mint_Grotesk',sans-serif] text-[#f7f3e8] text-2xl font-medium hover:opacity-80 transition-opacity"
-          >
-            Cerrar
-          </button>
+                <ul className="w-full flex flex-col items-center gap-4 mt-6 text-[#f7f3e8]">
+                  <li>
+                    <Link
+                      href="/projects/filmin"
+                      className="font-['Mint_Grotesk',sans-serif] text-2xl underline underline-offset-4 hover:text-[#76e384]"
+                      onClick={() => setMenuOpen?.(false)}
+                    >
+                      Filmin
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/projects/zumo-de-fetos"
+                      className="font-['Mint_Grotesk',sans-serif] text-2xl underline underline-offset-4 hover:text-[#76e384]"
+                      onClick={() => setMenuOpen?.(false)}
+                    >
+                      Zumo de fetos
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/projects/rainbox"
+                      className="font-['Mint_Grotesk',sans-serif] text-2xl underline underline-offset-4 hover:text-[#76e384]"
+                      onClick={() => setMenuOpen?.(false)}
+                    >
+                      Rainbox
+                    </Link>
+                  </li>
+                </ul>
+
+                <ul className="w-full flex flex-col items-center gap-6 mt-8 text-[#f7f3e8]">
+                  <li>
+                    <Link
+                      href="/about"
+                      className="font-['Mint_Grotesk',sans-serif] text-4xl underline underline-offset-4 hover:text-[#76e384]"
+                      onClick={() => setMenuOpen?.(false)}
+                    >
+                      About
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/contact"
+                      className="font-['Mint_Grotesk',sans-serif] text-4xl underline underline-offset-4 hover:text-[#76e384]"
+                      onClick={() => setMenuOpen?.(false)}
+                    >
+                      Contact
+                    </Link>
+                  </li>
+                </ul>
+              </nav>
+
+              <button
+                type="button"
+                aria-label="Cerrar menú"
+                onClick={() => setMenuOpen?.(false)}
+                className="h-12 px-5 rounded-full bg-[#f7f3e8] text-[#5576e8] flex items-center justify-center select-none"
+              >
+                <span className="font-['Mint_Grotesk',sans-serif] text-base">Cerrar</span>
+              </button>
+            </div>
+          </div>
         </div>
+      ) : null}
+
+      {effectiveVariant === 'up-down' && (
+        <NavBar>
+          <ArrowButton label="Ir arriba" onClick={onScrollToTop} tone={tone}>
+            ↑
+          </ArrowButton>
+          <MenuButton menuOpen={menuOpen} setMenuOpen={setMenuOpen} tone={tone} />
+          <ArrowButton label="Ir abajo" onClick={onScrollToBottom} tone={tone}>
+            ↓
+          </ArrowButton>
+        </NavBar>
+      )}
+
+      {effectiveVariant === 'back-forward' && (
+        <NavBar>
+          <ArrowButton label="Atrás" onClick={onBack} tone={tone}>
+            ←
+          </ArrowButton>
+          <MenuButton menuOpen={menuOpen} setMenuOpen={setMenuOpen} tone={tone} />
+          <ArrowButton label="Adelante" onClick={onForward} tone={tone}>
+            →
+          </ArrowButton>
+        </NavBar>
+      )}
+
+      {effectiveVariant === 'full' && (
+        <NavBar>
+          <ArrowButton label="Atrás" onClick={onBack} tone={tone}>
+            ←
+          </ArrowButton>
+          <ArrowButton label="Ir arriba" onClick={onScrollToTop} tone={tone}>
+            ↑
+          </ArrowButton>
+          <MenuButton menuOpen={menuOpen} setMenuOpen={setMenuOpen} tone={tone} />
+          <ArrowButton label="Ir abajo" onClick={onScrollToBottom} tone={tone}>
+            ↓
+          </ArrowButton>
+          <ArrowButton label="Adelante" onClick={onForward} tone={tone}>
+            →
+          </ArrowButton>
+        </NavBar>
       )}
     </>
   );

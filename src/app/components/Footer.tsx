@@ -1,55 +1,61 @@
 export function FooterDesktop() {
   return (
-    <div className="bg-[#d42b57] text-[#f7f3e8] font-['Mint_Grotesk',sans-serif] overflow-hidden relative p-0 h-screen" data-name="footer_desktop" data-node-id="1577:172">
-      <p className="absolute left-[49px] text-[32px] top-[480px]" data-node-id="1577:173">
-        Redes
-      </p>
-      <p className="absolute left-[49px] text-[36px] top-[672px]" data-node-id="1577:174">
-        Behance
-      </p>
-      <p className="absolute left-[49px] text-[36px] top-[546px]" data-node-id="1577:175">
-        Instagram
-      </p>
-      <p className="absolute left-[49px] text-[36px] top-[609px]" data-node-id="1577:176">
-        LinkedIn
-      </p>
-      <p className="absolute left-[calc(50%-45px)] text-[24px] top-[880px]" data-node-id="1577:177">
-        © 2026
-      </p>
-      <p className="absolute left-[calc(50%-707px)] text-[48px] top-[183px]" data-node-id="1577:178">
-        rudy chávez
-      </p>
-      <p className="absolute left-[calc(50%-707px)] text-[64px] top-[269px]" data-node-id="1577:179">
-        hi@rudychavez.es
-      </p>
-    </div>
+    <footer className="w-full h-full bg-[#d42b57] text-[#f7f3e8] font-['Mint_Grotesk',sans-serif]">
+      <div className="h-full w-full px-12 py-10 flex flex-col">
+        <div className="flex flex-col gap-4">
+          <p className="text-5xl leading-none">rudy chávez</p>
+          <p className="text-6xl leading-none">hi@rudychavez.es</p>
+        </div>
+
+        <div className="flex-1" />
+
+        <div className="flex items-end justify-between">
+          <div className="flex flex-col gap-3">
+            <p className="text-2xl">Redes</p>
+            <a className="text-3xl underline" href="https://www.instagram.com" target="_blank" rel="noreferrer">
+              Instagram
+            </a>
+            <a className="text-3xl underline" href="https://www.linkedin.com" target="_blank" rel="noreferrer">
+              LinkedIn
+            </a>
+            <a className="text-3xl underline" href="https://www.behance.net" target="_blank" rel="noreferrer">
+              Behance
+            </a>
+          </div>
+
+          <p className="text-xl">© 2026</p>
+        </div>
+      </div>
+    </footer>
   );
 }
 
-export function FooterMobile({ className }: { className?: string }) {
+export function FooterMobile() {
   return (
-    <div className={className} data-name="footer" data-node-id="1528:275">
-      <p className="absolute left-[calc(50%-44.5px)] text-[24px] top-[698px] whitespace-pre" data-node-id="1525:1165">
-        © 2026
-      </p>
-      <p className="absolute left-[calc(50%-172.5px)] text-[40px] top-[244px] whitespace-pre" data-node-id="1525:191">
-        hi@rudychavez.es
-      </p>
-      <p className="absolute left-[calc(50%-172.5px)] text-[20px] top-[397px] whitespace-pre" data-node-id="1525:1170">
-        Redes
-      </p>
-      <p className="absolute left-[calc(50%-172.5px)] text-[24px] top-[445px] w-[162px] whitespace-pre-wrap" data-node-id="1525:1172">
-        Instagram
-      </p>
-      <p className="absolute left-[calc(50%-172.5px)] text-[24px] top-[487px] w-[162px] whitespace-pre-wrap" data-node-id="1525:1173">
-        LinkedIn
-      </p>
-      <p className="absolute left-[calc(50%-172.5px)] text-[24px] top-[529px] w-[162px] whitespace-pre-wrap" data-node-id="1525:1174">
-        Behance
-      </p>
-      <p className="absolute left-[calc(50%-172.5px)] text-[36px] top-[175px] whitespace-pre" data-node-id="1525:1169">
-        rudy chávez
-      </p>
-    </div>
+    <footer className="w-full h-full bg-[#d42b57] text-[#f7f3e8] font-['Mint_Grotesk',sans-serif]">
+      <div className="h-full w-full px-6 py-8 flex flex-col">
+        <div className="flex flex-col gap-3">
+          <p className="text-3xl leading-none">rudy chávez</p>
+          <p className="text-2xl leading-tight">hi@rudychavez.es</p>
+        </div>
+
+        <div className="flex-1" />
+
+        <div className="flex flex-col gap-3">
+          <p className="text-xl">Redes</p>
+          <a className="text-2xl underline" href="https://www.instagram.com" target="_blank" rel="noreferrer">
+            Instagram
+          </a>
+          <a className="text-2xl underline" href="https://www.linkedin.com" target="_blank" rel="noreferrer">
+            LinkedIn
+          </a>
+          <a className="text-2xl underline" href="https://www.behance.net" target="_blank" rel="noreferrer">
+            Behance
+          </a>
+        </div>
+
+        <p className="mt-8 text-lg text-center">© 2026</p>
+      </div>
+    </footer>
   );
 }
