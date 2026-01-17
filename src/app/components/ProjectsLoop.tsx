@@ -49,13 +49,23 @@ export default function ProjectsLoop({ projects }: { projects: Project[] }) {
         const t = Math.max(0, Math.min(1, 1 - dist / range));
         const e = ease(t);
 
-        const rotation = Number(card.dataset.rotation ?? '0');
-        const scale = 0.92 + (1.0 - 0.92) * e;
-        const vw = 78 + (90 - 78) * e;
+        const rotation = 0;
+        const scale = 0.84 + (1.0 - 0.84) * e;
+        card.style.transform = `scale(${scale})`;
 
-        card.style.width = `${vw}vw`;
-        card.style.maxWidth = '24rem';
-        card.style.transform = `rotate(${rotation}deg) scale(${scale})`;
+        const pill = card.querySelector<HTMLElement>('[data-title-pill]');
+        if (pill) {
+          const start = 0.55;
+          const end = 0.85;
+          const p = Math.max(0, Math.min(1, (t - start) / (end - start)));
+          const pe = ease(p);
+
+          const opacity = pe;
+          const pillScale = 0.95 + (1.0 - 0.95) * pe;
+
+          pill.style.opacity = opacity.toFixed(3);
+          pill.style.transform = `translate(-50%, calc(-50% + 6rem)) scale(${pillScale})`;
+        }
 
         const floatWrap = card.querySelector<HTMLElement>('[data-float-wrapper]');
         if (floatWrap) {
@@ -106,26 +116,32 @@ export default function ProjectsLoop({ projects }: { projects: Project[] }) {
   return (
     <div
       ref={containerRef}
-      className="projects-loop h-screen w-full overflow-y-auto flex flex-col items-center gap-8 py-16"
+      className="projects-loop h-full w-full overflow-y-auto flex flex-col items-center gap-6 py-16"
       style={{ WebkitOverflowScrolling: 'touch' }}
     >
-      {loopProjects.map((project) => (
+      {loopProjects.map((project, idx) => (
         <Link
-          key={project.id}
+          key={`${project.id}-${idx}`}
           href={`/projects/${project.slug}`}
           aria-label={project.title}
-          className="project-card flex items-center justify-center relative"
+          className="project-card flex items-center justify-center relative w-[90vw] max-w-[24rem]"
           data-project-card
-          data-rotation={project.rotation}
         >
           <div data-float-wrapper className="project-float flex flex-col items-center justify-center p-2.5 relative w-full">
-            <div className="project-media h-64 relative rounded-2xl shrink-0 w-full overflow-hidden">
+            <div className="project-media h-72 relative rounded-2xl shrink-0 w-full overflow-hidden">
               <img
                 src={project.image}
                 alt={project.title}
                 className="absolute inset-0 w-full h-full object-cover rounded-2xl"
                 draggable={false}
               />
+            </div>
+            <div
+              data-title-pill
+              className="project-title-pill pointer-events-none absolute left-1/2 top-1/2"
+              style={{ opacity: 0, transform: 'translate(-50%, calc(-50% + 6rem)) scale(0.95)' }}
+            >
+              <span className="project-title-pill-inner">{project.title}</span>
             </div>
           </div>
         </Link>
@@ -142,6 +158,20 @@ export default function ProjectsLoop({ projects }: { projects: Project[] }) {
         .project-float {
           animation: projectFloat var(--floatDur, 5s) ease-in-out infinite;
           will-change: transform;
+        }
+        .project-title-pill {
+          will-change: transform, opacity;
+        }
+        .project-title-pill-inner {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.25rem;
+          line-height: 1;
+          padding: 1rem 1.5rem;
+          border-radius: 9999px;
+          background: #f7f3e8;
+          color: #2f333e;
         }
       `}</style>
     </div>
