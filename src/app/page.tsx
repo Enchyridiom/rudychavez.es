@@ -113,17 +113,17 @@ export default function Home() {
     <main className="bg-[#f7f3e8] text-[#2f333e]">
       <div
         ref={sectionsRef}
-        className="h-screen w-full overflow-y-scroll overscroll-y-none scroll-smooth snap-y snap-mandatory"
+        className="h-[100dvh] w-full overflow-y-scroll overscroll-y-none scroll-smooth snap-y snap-mandatory"
       >
-        <section id="header" className="h-screen w-full shrink-0 snap-start overflow-hidden">
+        <section id="header" className="h-[100dvh] w-full shrink-0 snap-start overflow-hidden">
           <Header />
         </section>
 
-        <section id="projects" className="h-screen w-full shrink-0 snap-start overflow-hidden bg-[#f7f3e8]">
+        <section id="projects" className="h-[100dvh] w-full shrink-0 snap-start overflow-hidden bg-[#f7f3e8]">
           <ProjectsLoop projects={projectsData} />
         </section>
 
-        <section id="footer" className="h-screen w-full shrink-0 snap-start overflow-hidden bg-[#d42b57]">
+        <section id="footer" className="h-[100dvh] w-full shrink-0 snap-start overflow-hidden bg-[#d42b57]">
           <div className="hidden md:block h-full">
             <FooterDesktop />
           </div>
