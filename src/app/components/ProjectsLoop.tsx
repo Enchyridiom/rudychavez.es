@@ -12,15 +12,16 @@ export type Project = {
 };
 
 export default function ProjectsLoop({ projects }: { projects: Project[] }) {
-  const loopProjects = [...projects, ...projects, ...projects];
+  const repeatCount = 7;
+  const loopProjects = Array.from({ length: repeatCount }, () => projects).flat();
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
 
-    const oneThird = el.scrollHeight / 3;
-    el.scrollTop = oneThird;
+    const segment = el.scrollHeight / repeatCount;
+    el.scrollTop = segment * Math.floor(repeatCount / 2);
   }, []);
 
   const rafRef = useRef<number | null>(null);
@@ -120,8 +121,10 @@ export default function ProjectsLoop({ projects }: { projects: Project[] }) {
   return (
     <div
       ref={containerRef}
-      className="projects-loop h-full w-full overflow-y-auto flex flex-col items-center gap-6 py-16"
-      style={{ WebkitOverflowScrolling: 'touch' }}
+      className="projects-loop h-full w-full overflow-y-scroll overscroll-contain flex flex-col items-center gap-6 py-16"
+      style={{ WebkitOverflowScrolling: 'touch', overscrollBehaviorY: 'contain', touchAction: 'pan-y' }}
+      onWheelCapture={(e) => e.stopPropagation()}
+      onTouchMoveCapture={(e) => e.stopPropagation()}
     >
       {loopProjects.map((project, idx) => (
         <Link

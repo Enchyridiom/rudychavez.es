@@ -93,6 +93,18 @@ export function NavigationMenu({
 }: Props) {
   const effectiveVariant: Exclude<Variant, 'mobile'> = variant === 'mobile' ? 'up-down' : variant;
 
+  const handleUp =
+    onScrollToTop ??
+    (() => {
+      document.getElementById('header')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+  const handleDown =
+    onScrollToBottom ??
+    (() => {
+      document.getElementById('footer')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
   return (
     <>
       {menuOpen ? (
@@ -192,11 +204,11 @@ export function NavigationMenu({
 
       {effectiveVariant === 'up-down' && (
         <NavBar>
-          <ArrowButton label="Ir arriba" onClick={onScrollToTop} tone={tone}>
+          <ArrowButton label="Ir arriba" onClick={handleUp} tone={tone}>
             ↑
           </ArrowButton>
           <MenuButton menuOpen={menuOpen} setMenuOpen={setMenuOpen} tone={tone} />
-          <ArrowButton label="Ir abajo" onClick={onScrollToBottom} tone={tone}>
+          <ArrowButton label="Ir abajo" onClick={handleDown} tone={tone}>
             ↓
           </ArrowButton>
         </NavBar>
@@ -219,11 +231,11 @@ export function NavigationMenu({
           <ArrowButton label="Atrás" onClick={onBack} tone={tone}>
             ←
           </ArrowButton>
-          <ArrowButton label="Ir arriba" onClick={onScrollToTop} tone={tone}>
+          <ArrowButton label="Ir arriba" onClick={handleUp} tone={tone}>
             ↑
           </ArrowButton>
           <MenuButton menuOpen={menuOpen} setMenuOpen={setMenuOpen} tone={tone} />
-          <ArrowButton label="Ir abajo" onClick={onScrollToBottom} tone={tone}>
+          <ArrowButton label="Ir abajo" onClick={handleDown} tone={tone}>
             ↓
           </ArrowButton>
           <ArrowButton label="Adelante" onClick={onForward} tone={tone}>
