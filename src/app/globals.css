@@ -61,18 +61,20 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--primary-blue);
 }
 
-a {
-  color: inherit;
-  text-decoration: underline;
-  text-underline-offset: 0.15em;
-}
+@layer base {
+  a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
 
-a:hover {
-  color: var(--primary-blue);
-}
+  a:hover {
+    color: var(--primary-blue);
+  }
 
-h1 a:hover, h2 a:hover, h3 a:hover, h4 a:hover, h5 a:hover, h6 a:hover {
-  color: var(--primary-lima);
+  h1 a:hover, h2 a:hover, h3 a:hover, h4 a:hover, h5 a:hover, h6 a:hover {
+    color: var(--primary-lima);
+  }
 }
 
 ::selection {
