@@ -2,95 +2,83 @@
 
 import { useEffect, useRef } from 'react';
 
+import { gsap } from 'gsap';
+import { ScrambleTextPlugin } from 'gsap/ScrambleTextPlugin';
+
+gsap.registerPlugin(ScrambleTextPlugin);
+
 export default function Header() {
   const titleRef = useRef<HTMLHeadingElement | null>(null);
   const subtitleRef = useRef<HTMLParagraphElement | null>(null);
+  const line1Ref = useRef<HTMLSpanElement | null>(null);
+  const line2Ref = useRef<HTMLSpanElement | null>(null);
 
   useEffect(() => {
     const titleEl = titleRef.current;
     const subtitleEl = subtitleRef.current;
-    if (!titleEl || !subtitleEl) return;
+    const line1El = line1Ref.current;
+    const line2El = line2Ref.current;
+    if (!titleEl || !subtitleEl || !line1El || !line2El) return;
 
-    const prefersReduced =
-      typeof window !== 'undefined' &&
-      window.matchMedia &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     if (prefersReduced) {
-      titleEl.style.opacity = '1';
-      subtitleEl.style.opacity = '1';
-      titleEl.style.filter = 'none';
-      subtitleEl.style.filter = 'none';
+      line1El.textContent = 'rudy';
+      line2El.textContent = 'chávez';
+      gsap.set([subtitleEl], { opacity: 1, y: 0, clearProps: 'filter' });
       return;
     }
 
-    let split: any = null;
-    let tl: any = null;
+    gsap.set([line1El, line2El], { opacity: 1, clearProps: 'filter' });
 
-    (async () => {
-      const gsapMod: any = await import('gsap');
-      const gsap = gsapMod.gsap ?? gsapMod.default ?? gsapMod;
+    gsap.set(subtitleEl, {
+      opacity: 0,
+      y: 12,
+      filter: 'blur(1.5px)',
+      willChange: 'transform, opacity, filter',
+    });
 
-      let SplitText: any = null;
-      try {
-        const st: any = await import('gsap/SplitText');
-        SplitText = st.SplitText ?? st.default ?? st;
-      } catch {
-        SplitText = null;
-      }
+    line1El.textContent = 'rudy';
+    line2El.textContent = 'chávez';
 
-      if (!SplitText) {
-        gsap.set([titleEl, subtitleEl], { opacity: 1, y: 0, clearProps: 'filter' });
-        return;
-      }
+    const tl = gsap.timeline();
 
-      gsap.registerPlugin(SplitText);
-
-      split = new SplitText(titleEl, { type: 'chars', charsClass: 'h-char' });
-
-      gsap.set(split.chars, {
-        opacity: 0,
-        y: 14,
-        filter: 'blur(2px)',
-        willChange: 'transform, opacity, filter',
-      });
-
-      gsap.set(subtitleEl, {
-        opacity: 0,
-        y: 10,
-        filter: 'blur(1.5px)',
-        willChange: 'transform, opacity, filter',
-      });
-
-      tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-
-      tl.to(split.chars, {
-        opacity: 1,
-        y: 0,
-        filter: 'blur(0px)',
-        duration: 0.7,
-        stagger: 0.03,
-      })
-        .to(
-          subtitleEl,
-          {
-            opacity: 1,
-            y: 0,
-            filter: 'blur(0px)',
-            duration: 0.55,
-          },
-          '-=0.25'
-        )
-        .set([split.chars, subtitleEl], { clearProps: 'willChange' });
-    })();
+    tl.to(line1El, {
+      duration: 1.1,
+      scrambleText: {
+        text: 'rudy',
+        chars: 'lowerCase',
+        speed: 0.7,
+        revealDelay: 0.1,
+      },
+      ease: 'power4.out',
+    }, 0)
+      .to(line2El, {
+        duration: 1.0,
+        scrambleText: {
+          text: 'chávez',
+          chars: 'lowerCase',
+          speed: 0.7,
+          revealDelay: 0.1,
+        },
+        ease: 'power4.out',
+      }, 0)
+      .to(
+        subtitleEl,
+        {
+          opacity: 1,
+          y: 0,
+          filter: 'blur(0px)',
+          duration: 0.55,
+          clearProps: 'willChange',
+        },
+        '-=0.61'
+      );
 
     return () => {
-      try {
-        if (tl) tl.kill();
-      } catch {}
-      try {
-        if (split && typeof split.revert === 'function') split.revert();
-      } catch {}
+      tl.kill();
+      line1El.textContent = 'rudy';
+      line2El.textContent = 'chávez';
     };
   }, []);
 
@@ -101,8 +89,8 @@ export default function Header() {
           ref={titleRef}
           className="font-['Mint_Grotesk',sans-serif] text-[#5576e8] text-8xl leading-tight"
         >
-          <span className="block">rudy</span>
-          <span className="block">chávez</span>
+          <span ref={line1Ref} className="block">rudy</span>
+          <span ref={line2Ref} className="block">chávez</span>
         </h1>
         <p
           ref={subtitleRef}

@@ -153,7 +153,7 @@ export default function ProjectsLoop({ projects }: { projects: Project[] }) {
           </div>
         </Link>
       ))}
-      <style jsx>{`
+      <style>{`
         @keyframes projectFloat {
           0%, 100% {
             transform: translateY(calc(var(--floatAmp, 0rem) * -1));
@@ -177,8 +177,31 @@ export default function ProjectsLoop({ projects }: { projects: Project[] }) {
           line-height: 1;
           padding: 1rem 1.5rem;
           border-radius: 9999px;
-          background: #f7f3e8;
+          background-color: #f7f3e8;
           color: #2f333e;
+          box-shadow: 0 10px 24px rgba(47, 51, 62, 0.12);
+          transform: translateZ(0);
+          -webkit-transform: translateZ(0);
+          backface-visibility: hidden;
+          -webkit-backface-visibility: hidden;
+          transition: background-color 180ms ease, color 180ms ease, box-shadow 180ms ease;
+        }
+
+        .project-card:hover .project-title-pill-inner,
+        .project-card:active .project-title-pill-inner,
+        .project-card:focus-visible .project-title-pill-inner {
+          background-color: #2f333e;
+          color: #f7f3e8;
+          box-shadow: 0 14px 32px rgba(47, 51, 62, 0.18);
+        }
+
+        @media (hover: none) {
+          /* Prevent "sticky" hover on touch devices: rely on :active instead */
+          .project-card:hover .project-title-pill-inner {
+            background-color: #f7f3e8;
+            color: #2f333e;
+            box-shadow: 0 10px 24px rgba(47, 51, 62, 0.12);
+          }
         }
         .project-media {
           box-shadow: 0 18px 40px rgba(47, 51, 62, 0.12);

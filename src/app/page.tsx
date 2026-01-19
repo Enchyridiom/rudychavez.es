@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { gsap } from 'gsap';
 
 import Header from './components/Header';
 import ProjectsLoop from './components/ProjectsLoop';
@@ -26,6 +27,23 @@ export default function Home() {
 
   const navScrollRef = useRef(false);
   const navScrollTimerRef = useRef<number | null>(null);
+
+  const headerBounceRef = useRef<HTMLDivElement | null>(null);
+  const footerBounceRef = useRef<HTMLDivElement | null>(null);
+
+  const bounce = (el: HTMLDivElement | null, direction: 'up' | 'down') => {
+    if (!el) return;
+
+    const distance = 18;
+    const y = direction === 'up' ? -distance : distance;
+
+    gsap.killTweensOf(el);
+
+    gsap
+      .timeline()
+      .to(el, { y, duration: 0.16, ease: 'power2.out' })
+      .to(el, { y: 0, duration: 0.34, ease: 'power3.out' });
+  };
 
   const projectsData: Project[] = useMemo(
     () => [
@@ -100,12 +118,18 @@ export default function Home() {
   };
 
   const goUp = () => {
-    if (activeSection === 0) return;
+    if (activeSection === 0) {
+      bounce(headerBounceRef.current, 'up');
+      return;
+    }
     scrollToSection(((activeSection - 1) as 0 | 1 | 2));
   };
 
   const goDown = () => {
-    if (activeSection === 2) return;
+    if (activeSection === 2) {
+      bounce(footerBounceRef.current, 'down');
+      return;
+    }
     scrollToSection(((activeSection + 1) as 0 | 1 | 2));
   };
 
@@ -116,7 +140,9 @@ export default function Home() {
         className="h-[100dvh] w-full overflow-y-scroll overscroll-y-none scroll-smooth snap-y snap-mandatory"
       >
         <section id="header" className="h-[100dvh] w-full shrink-0 snap-start overflow-hidden">
-          <Header />
+          <div ref={headerBounceRef} className="h-full w-full will-change-transform">
+            <Header />
+          </div>
         </section>
 
         <section id="projects" className="h-[100dvh] w-full shrink-0 snap-start overflow-hidden bg-[#f7f3e8]">
@@ -124,11 +150,13 @@ export default function Home() {
         </section>
 
         <section id="footer" className="h-[100dvh] w-full shrink-0 snap-start overflow-hidden bg-[#d42b57]">
-          <div className="hidden md:block h-full">
-            <FooterDesktop />
-          </div>
-          <div className="md:hidden h-full">
-            <FooterMobile />
+          <div ref={footerBounceRef} className="h-full w-full will-change-transform">
+            <div className="hidden md:block h-full">
+              <FooterDesktop />
+            </div>
+            <div className="md:hidden h-full">
+              <FooterMobile />
+            </div>
           </div>
         </section>
       </div>
