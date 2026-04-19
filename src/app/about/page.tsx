@@ -3,25 +3,28 @@
 import { useState } from 'react';
 import { FooterDesktop, FooterMobile } from '../components/Footer';
 import { NavigationMenu } from '../components/NavigationMenu';
-
-const imgPortfolio2023V3FotoPerfil1 = "/assets/a93168c67dfb0440978f4dae3fecd46d44458f1c.png";
-const imgImg24941 = "/assets/df5274278c9160cc81582939511bc1ce533d1fd4.png";
-const imgImg28071 = "/assets/ecca3b6afb410287fb7ed0bbf06c432c8839289e.png";
+import { ImagePlaceholder } from '../components/ImagePlaceholder';
+import { useSubpageNav } from '../components/useSubpageNav';
 
 export default function AboutPage() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { scrollToTop, scrollToBottom } = useSubpageNav();
 
   return (
     <>
+      <NavigationMenu
+        menuOpen={menuOpen}
+        setMenuOpen={setMenuOpen}
+        variant="up-down"
+        onScrollToTop={scrollToTop}
+        onScrollToBottom={scrollToBottom}
+      />
+
       {/* Desktop View */}
       <div className="hidden md:block bg-[#f7f3e8] relative w-full min-h-screen">
-        {/* Header with image */}
-        <div className="relative h-96">
-          <img 
-            src={imgPortfolio2023V3FotoPerfil1} 
-            alt="Rudy Chávez" 
-            className="w-full h-full object-cover"
-          />
+        {/* Header placeholder */}
+        <div className="relative h-96 px-12 pt-12">
+          <ImagePlaceholder />
         </div>
 
         {/* Content */}
@@ -49,9 +52,9 @@ export default function AboutPage() {
             </div>
           </div>
 
-          {/* Image */}
-          <div className="h-80 rounded-2xl overflow-hidden bg-gray-200">
-            <img src={imgImg24941} alt="Workspace" className="w-full h-full object-cover" />
+          {/* Image placeholder */}
+          <div className="h-80">
+            <ImagePlaceholder />
           </div>
 
           {/* Web como medio Section */}
@@ -63,9 +66,9 @@ export default function AboutPage() {
             </div>
           </div>
 
-          {/* Image */}
-          <div className="h-80 rounded-2xl overflow-hidden bg-gray-200">
-            <img src={imgImg28071} alt="Team" className="w-full h-full object-cover" />
+          {/* Image placeholder */}
+          <div className="h-80">
+            <ImagePlaceholder />
           </div>
 
           {/* Marco profesional Section */}
@@ -81,17 +84,16 @@ export default function AboutPage() {
         </div>
 
         {/* Footer Desktop */}
-        <FooterDesktop />
+        <section className="h-[100dvh]">
+          <FooterDesktop />
+        </section>
       </div>
 
       {/* Mobile View */}
-      <div className="md:hidden bg-[#f7f3e8] relative w-full min-h-screen pb-24">
-        {/* Navigation Menu */}
-        <NavigationMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} variant="full" />
-
-        {/* Profile Image */}
-        <div className="h-64 w-full overflow-hidden bg-gray-200">
-          <img src={imgPortfolio2023V3FotoPerfil1} alt="Rudy" className="w-full h-full object-cover" />
+      <div className="md:hidden bg-[#f7f3e8] relative w-full min-h-screen">
+        {/* Profile placeholder */}
+        <div className="h-64 w-full px-6 pt-16">
+          <ImagePlaceholder />
         </div>
 
         {/* Title */}
@@ -119,9 +121,9 @@ export default function AboutPage() {
             </div>
           </div>
 
-          {/* Image */}
-          <div className="h-56 rounded-lg overflow-hidden bg-gray-200">
-            <img src={imgImg24941} alt="Workspace" className="w-full h-full object-cover" />
+          {/* Image placeholder */}
+          <div className="h-56">
+            <ImagePlaceholder />
           </div>
 
           {/* Web como medio */}
@@ -133,9 +135,9 @@ export default function AboutPage() {
             </div>
           </div>
 
-          {/* Image */}
-          <div className="h-56 rounded-lg overflow-hidden bg-gray-200">
-            <img src={imgImg28071} alt="Team" className="w-full h-full object-cover" />
+          {/* Image placeholder */}
+          <div className="h-56">
+            <ImagePlaceholder />
           </div>
 
           {/* Marco profesional */}
@@ -151,7 +153,9 @@ export default function AboutPage() {
         </div>
 
         {/* Footer Mobile */}
-        <FooterMobile />
+        <section className="h-[100dvh]">
+          <FooterMobile />
+        </section>
       </div>
     </>
   );
