@@ -3,17 +3,25 @@
 import { useState } from 'react';
 import { FooterDesktop, FooterMobile } from '../components/Footer';
 import { NavigationMenu } from '../components/NavigationMenu';
+import { useSubpageNav } from '../components/useSubpageNav';
 
 export default function ContactPage() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { scrollToTop, scrollToBottom } = useSubpageNav();
 
   return (
     <>
-      <NavigationMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} variant="full" />
+      <NavigationMenu
+        menuOpen={menuOpen}
+        setMenuOpen={setMenuOpen}
+        variant="up-down"
+        onScrollToTop={scrollToTop}
+        onScrollToBottom={scrollToBottom}
+      />
 
       {/* Desktop View */}
       <div className="hidden md:block w-full">
-        <section className="bg-[#5576e8] min-h-screen flex flex-col items-center justify-center">
+        <section className="bg-[#5576e8] h-[100dvh] flex flex-col items-center justify-center">
           <div className="text-center space-y-12">
             <h1 className="font-['Mint_Grotesk',sans-serif] text-[#f7f3e8]! text-8xl">Contacto</h1>
             <div className="space-y-6">
@@ -27,14 +35,14 @@ export default function ContactPage() {
           </div>
         </section>
 
-        <section className="min-h-screen">
+        <section className="h-[100dvh]">
           <FooterDesktop />
         </section>
       </div>
 
       {/* Mobile View */}
       <div className="md:hidden w-full">
-        <section className="bg-[#5576e8] min-h-screen flex flex-col items-center justify-center py-24 px-6">
+        <section className="bg-[#5576e8] h-[100dvh] flex flex-col items-center justify-center py-24 px-6">
           <div className="space-y-8 text-center">
             <h1 className="font-['Mint_Grotesk',sans-serif] text-[#f7f3e8]! text-5xl">Contacto</h1>
             <div className="space-y-4">
@@ -48,7 +56,7 @@ export default function ContactPage() {
           </div>
         </section>
 
-        <section className="min-h-screen">
+        <section className="h-[100dvh]">
           <FooterMobile />
         </section>
       </div>

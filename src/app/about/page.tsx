@@ -4,13 +4,21 @@ import { useState } from 'react';
 import { FooterDesktop, FooterMobile } from '../components/Footer';
 import { NavigationMenu } from '../components/NavigationMenu';
 import { ImagePlaceholder } from '../components/ImagePlaceholder';
+import { useSubpageNav } from '../components/useSubpageNav';
 
 export default function AboutPage() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { scrollToTop, scrollToBottom } = useSubpageNav();
 
   return (
     <>
-      <NavigationMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} variant="full" />
+      <NavigationMenu
+        menuOpen={menuOpen}
+        setMenuOpen={setMenuOpen}
+        variant="up-down"
+        onScrollToTop={scrollToTop}
+        onScrollToBottom={scrollToBottom}
+      />
 
       {/* Desktop View */}
       <div className="hidden md:block bg-[#f7f3e8] relative w-full min-h-screen">
@@ -76,7 +84,7 @@ export default function AboutPage() {
         </div>
 
         {/* Footer Desktop */}
-        <section className="min-h-screen">
+        <section className="h-[100dvh]">
           <FooterDesktop />
         </section>
       </div>
@@ -145,7 +153,7 @@ export default function AboutPage() {
         </div>
 
         {/* Footer Mobile */}
-        <section className="min-h-screen">
+        <section className="h-[100dvh]">
           <FooterMobile />
         </section>
       </div>
