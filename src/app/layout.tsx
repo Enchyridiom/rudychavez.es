@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { UnderConstructionBanner } from "./components/UnderConstructionBanner";
 
 export const metadata: Metadata = {
   title: "Rudy Chávez | Designer & Developer",
@@ -14,6 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased overflow-x-hidden">
+        <UnderConstructionBanner />
         {children}
       </body>
     </html>
