@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import FooterDesktop from '../components/FooterDesktop.astro';
 import FooterMobile from '../components/FooterMobile.astro';
+import NavigationMenu from '../components/NavigationMenu.astro';
 
 // TODO al migrar: en esta página los enlaces (email) deben cambiar a color
 // lima (#76e384) en hover, no al azul global. El hover global actual se ve
@@ -10,6 +11,7 @@ import FooterMobile from '../components/FooterMobile.astro';
 ---
 
 <Layout title="Contacto | Rudy Chávez">
+  <NavigationMenu />
   <!-- Desktop View -->
   <div class="hidden md:block w-full">
     <section class="bg-[#5576e8] h-[100dvh] flex flex-col items-center justify-center">

@@ -1,0 +1,192 @@
+---
+// NavigationMenu.astro — variante up-down (única usada en páginas internas)
+//
+// Migración del original Next.js que usaba GSAP timeline para el morph.
+// Aquí el morph pastilla→overlay se hace con View Transitions API:
+// pill y overlay comparten `view-transition-name: nav-morph`, y al hacer
+// `display: none` en uno + visible el otro dentro de `startViewTransition`,
+// el navegador interpola posición, tamaño y border-radius nativamente.
+//
+// Coste: ~0kB de JS de animación (solo la API nativa). El resto es CSS.
+//
+// TODOs futuros si se necesitan:
+//   - Variantes back-forward y full
+//   - Stagger animado de los enlaces del overlay al entrar
+//   - tone='footer' aún no usado (subpáginas siempre default)
+
+interface Props {
+  tone?: 'default' | 'footer';
+}
+
+const { tone = 'default' } = Astro.props;
+
+const arrowClass =
+  tone === 'footer'
+    ? 'bg-[#f7f3e8] text-[#d42b57] hover:bg-[#2f333e] hover:text-[#f7f3e8] focus-visible:ring-[#2f333e]'
+    : 'bg-[#d42b57] text-[#f7f3e8] hover:bg-[#5576e8] focus-visible:ring-[#5576e8]';
+
+const pillClass =
+  tone === 'footer'
+    ? 'bg-[#f7f3e8] text-[#d42b57] hover:bg-[#2f333e] hover:text-[#f7f3e8] focus-visible:ring-[#2f333e]'
+    : 'bg-[#d42b57] text-[#f7f3e8] hover:bg-[#5576e8] focus-visible:ring-[#5576e8]';
+---
+
+<!-- Backdrop con blur, oculto por defecto -->
+<div
+  data-nav-backdrop
+  class="fixed inset-0 z-40 bg-[#f7f3e8]/40 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300"
+>
+</div>
+
+<!-- Bottom nav bar: arrow up + pill + arrow down -->
+<div class="fixed inset-x-0 bottom-6 z-50 flex justify-center">
+  <div class="flex gap-3 items-center">
+    <button
+      data-nav-up
+      type="button"
+      aria-label="Ir arriba"
+      class:list={[
+        'w-12 h-12 rounded-full flex items-center justify-center select-none transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2',
+        arrowClass,
+      ]}
+    >
+      <span class="text-xl leading-none">↑</span>
+    </button>
+
+    <button
+      data-nav-pill
+      type="button"
+      aria-label="Abrir menú"
+      class:list={[
+        'h-12 px-6 rounded-full flex items-center justify-center select-none transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2',
+        pillClass,
+      ]}
+      style="view-transition-name: nav-morph;"
+    >
+      <span class="text-base">Menu</span>
+    </button>
+
+    <button
+      data-nav-down
+      type="button"
+      aria-label="Ir abajo"
+      class:list={[
+        'w-12 h-12 rounded-full flex items-center justify-center select-none transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2',
+        arrowClass,
+      ]}
+    >
+      <span class="text-xl leading-none">↓</span>
+    </button>
+  </div>
+</div>
+
+<!-- Overlay: 80vw × 70dvh centrado. display:none por defecto.
+     Comparte view-transition-name con la pastilla: el navegador
+     interpola entre ambos cuando se hace startViewTransition. -->
+<div
+  data-nav-overlay
+  class="fixed top-[15dvh] left-[10vw] w-[80vw] h-[70dvh] z-50 bg-[#d42b57] text-[#f7f3e8] rounded-3xl flex-col items-center justify-center hidden"
+  style="view-transition-name: nav-morph;"
+>
+  <div class="w-full h-full flex flex-col items-center justify-center px-8">
+    <nav class="flex flex-col items-center gap-8">
+      <a href="/" class="text-4xl no-underline hover:text-[#2f333e] active:text-[#2f333e]">Home</a>
+      <a href="/projects" class="text-4xl no-underline hover:text-[#2f333e] active:text-[#2f333e]">Proyectos</a>
+      <a href="/about" class="text-4xl no-underline hover:text-[#2f333e] active:text-[#2f333e]">About</a>
+      <a href="/contact" class="text-4xl no-underline hover:text-[#2f333e] active:text-[#2f333e]">Contacto</a>
+    </nav>
+
+    <button
+      data-nav-close
+      type="button"
+      aria-label="Cerrar menú"
+      class="mt-24 h-12 px-5 rounded-full bg-[#f7f3e8] text-[#d42b57] flex items-center justify-center select-none transition-colors duration-150 hover:bg-[#2f333e] hover:text-[#f7f3e8] active:bg-[#2f333e] active:text-[#f7f3e8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2f333e]"
+    >
+      <span class="text-base">Cerrar</span>
+    </button>
+  </div>
+</div>
+
+<script>
+  const pill = document.querySelector<HTMLButtonElement>('[data-nav-pill]');
+  const overlay = document.querySelector<HTMLDivElement>('[data-nav-overlay]');
+  const backdrop = document.querySelector<HTMLDivElement>('[data-nav-backdrop]');
+  const closeBtn = document.querySelector<HTMLButtonElement>('[data-nav-close]');
+  const upBtn = document.querySelector<HTMLButtonElement>('[data-nav-up]');
+  const downBtn = document.querySelector<HTMLButtonElement>('[data-nav-down]');
+
+  if (pill && overlay && backdrop && closeBtn && upBtn && downBtn) {
+    let menuOpen = false;
+
+    const applyState = () => {
+      if (menuOpen) {
+        pill.classList.add('hidden');
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
+        backdrop.style.opacity = '1';
+        backdrop.style.pointerEvents = 'auto';
+        document.body.style.overflow = 'hidden';
+      } else {
+        pill.classList.remove('hidden');
+        overlay.classList.add('hidden');
+        overlay.classList.remove('flex');
+        backdrop.style.opacity = '0';
+        backdrop.style.pointerEvents = 'none';
+        document.body.style.overflow = '';
+      }
+    };
+
+    const toggle = () => {
+      menuOpen = !menuOpen;
+
+      // View Transitions API: si el navegador la soporta, encapsulamos el
+      // cambio de DOM dentro de startViewTransition para que interpole
+      // posición/tamaño/border-radius de pill ↔ overlay automáticamente.
+      const doc = document as Document & {
+        startViewTransition?: (cb: () => void) => unknown;
+      };
+
+      if (doc.startViewTransition) {
+        doc.startViewTransition(applyState);
+      } else {
+        // Fallback (Firefox sin VT, navegadores antiguos): toggle instantáneo
+        applyState();
+      }
+    };
+
+    pill.addEventListener('click', toggle);
+    closeBtn.addEventListener('click', toggle);
+    backdrop.addEventListener('click', toggle);
+
+    // Cierra el menú con Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && menuOpen) toggle();
+    });
+
+    upBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    downBtn.addEventListener('click', () => {
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'smooth',
+      });
+    });
+  }
+</script>
+
+<style>
+  /* Customiza la duración y easing del morph nativo.
+     0.55s + cubic-bezier ≈ power3.inOut de GSAP. */
+  ::view-transition-group(nav-morph) {
+    animation-duration: 0.55s;
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+
+  /* El cross-fade default de los pseudos old/new dura lo mismo */
+  ::view-transition-old(nav-morph),
+  ::view-transition-new(nav-morph) {
+    animation-duration: 0.55s;
+  }
+</style>
