@@ -1,5 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import FooterDesktop from '../../components/FooterDesktop.astro';
+import FooterMobile from '../../components/FooterMobile.astro';
 
 // Astro genera estáticamente una página por cada entrada del array.
 // En build, esto produce: /projects/filmin/index.html, /projects/rainbox/index.html,
@@ -28,9 +30,8 @@ const { title } = Astro.props;
       </h1>
     </section>
 
-    <!-- TODO: <FooterDesktop /> — pendiente de migrar (debe ocupar 100dvh) -->
-    <section class="h-[100dvh] border-t border-[#2f333e]/10 flex items-center justify-center text-[#2f333e]/40 text-sm bg-[#f7f3e8]">
-      Footer pendiente de migrar
+    <section class="h-[100dvh]">
+      <FooterDesktop />
     </section>
   </div>
 
@@ -42,9 +43,8 @@ const { title } = Astro.props;
       </h1>
     </section>
 
-    <!-- TODO: <FooterMobile /> — pendiente de migrar (debe ocupar 100dvh) -->
-    <section class="h-[100dvh] border-t border-[#2f333e]/10 flex items-center justify-center text-[#2f333e]/40 text-sm bg-[#f7f3e8]">
-      Footer pendiente de migrar
+    <section class="h-[100dvh]">
+      <FooterMobile />
     </section>
   </div>
 </Layout>

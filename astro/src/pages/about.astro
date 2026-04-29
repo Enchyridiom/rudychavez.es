@@ -1,6 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import ImagePlaceholder from '../components/ImagePlaceholder.astro';
+import FooterDesktop from '../components/FooterDesktop.astro';
+import FooterMobile from '../components/FooterMobile.astro';
 ---
 
 <Layout title="Sobre mi | Rudy Chávez">
@@ -58,9 +60,8 @@ import ImagePlaceholder from '../components/ImagePlaceholder.astro';
       </div>
     </div>
 
-    <!-- TODO: <FooterDesktop /> — pendiente de migrar (debe ocupar 100dvh) -->
-    <section class="h-[100dvh] border-t border-[#2f333e]/10 flex items-center justify-center text-[#2f333e]/40 text-sm">
-      Footer pendiente de migrar
+    <section class="h-[100dvh]">
+      <FooterDesktop />
     </section>
   </div>
 
@@ -118,9 +119,8 @@ import ImagePlaceholder from '../components/ImagePlaceholder.astro';
       </div>
     </div>
 
-    <!-- TODO: <FooterMobile /> — pendiente de migrar (debe ocupar 100dvh) -->
-    <section class="h-[100dvh] border-t border-[#2f333e]/10 flex items-center justify-center text-[#2f333e]/40 text-sm">
-      Footer pendiente de migrar
+    <section class="h-[100dvh]">
+      <FooterMobile />
     </section>
   </div>
 </Layout>

@@ -1,5 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import FooterDesktop from '../components/FooterDesktop.astro';
+import FooterMobile from '../components/FooterMobile.astro';
 
 // TODO al migrar: en esta página los enlaces (email) deben cambiar a color
 // lima (#76e384) en hover, no al azul global. El hover global actual se ve
@@ -24,9 +26,8 @@ import Layout from '../layouts/Layout.astro';
       </div>
     </section>
 
-    <!-- TODO: <FooterDesktop /> — pendiente de migrar (debe ocupar 100dvh) -->
-    <section class="h-[100dvh] border-t border-[#2f333e]/10 flex items-center justify-center text-[#2f333e]/40 text-sm bg-[#f7f3e8]">
-      Footer pendiente de migrar
+    <section class="h-[100dvh]">
+      <FooterDesktop />
     </section>
   </div>
 
@@ -46,9 +47,8 @@ import Layout from '../layouts/Layout.astro';
       </div>
     </section>
 
-    <!-- TODO: <FooterMobile /> — pendiente de migrar (debe ocupar 100dvh) -->
-    <section class="h-[100dvh] border-t border-[#2f333e]/10 flex items-center justify-center text-[#2f333e]/40 text-sm bg-[#f7f3e8]">
-      Footer pendiente de migrar
+    <section class="h-[100dvh]">
+      <FooterMobile />
     </section>
   </div>
 </Layout>
