@@ -1,0 +1,84 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ImagePlaceholder from '../../components/ImagePlaceholder.astro';
+
+const projects = [
+  {
+    id: 1,
+    title: 'Filmin',
+    description: 'Rediseño de plataforma de streaming bajo demanda.',
+  },
+  {
+    id: 2,
+    title: 'Rainbox',
+    description: 'Branding para estudio fotográfico enfocado en momentos vitales.',
+  },
+  {
+    id: 3,
+    title: 'Zumo de Fetos',
+    description: 'Juego de mesa en colaboración con Mister Jägger y Xuri Fenton.',
+  },
+  {
+    id: 4,
+    title: 'Antes del Sí',
+    description: 'Mini brand para estudio profesional de maquillaje.',
+  },
+  {
+    id: 5,
+    title: 'Project NQ',
+    description: 'Manual de uso de teclados mecánicos.',
+  },
+];
+---
+
+<Layout title="Proyectos | Rudy Chávez">
+  <!-- Desktop View -->
+  <div class="hidden md:block bg-[#f7f3e8] relative w-full min-h-screen">
+    <div class="px-12 py-12">
+      <h1 class="text-[#5576e8] text-6xl mb-4">Proyectos</h1>
+    </div>
+
+    <div class="p-12 max-w-7xl mx-auto">
+      <div class="grid grid-cols-3 gap-8">
+        {projects.map((project) => (
+          <div class="flex flex-col">
+            <div class="h-80 mb-6">
+              <ImagePlaceholder />
+            </div>
+            <h3 class="text-[#5576e8] text-2xl mb-3">{project.title}</h3>
+            <p class="text-[#2f333e] text-base leading-relaxed">{project.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- TODO: <FooterDesktop /> — pendiente de migrar (debe ocupar 100dvh) -->
+    <section class="h-[100dvh] border-t border-[#2f333e]/10 flex items-center justify-center text-[#2f333e]/40 text-sm">
+      Footer pendiente de migrar
+    </section>
+  </div>
+
+  <!-- Mobile View -->
+  <div class="md:hidden bg-[#f7f3e8] relative w-full min-h-screen">
+    <div class="px-6 pt-20 pb-8">
+      <h1 class="text-[#5576e8] text-4xl">Proyectos</h1>
+    </div>
+
+    <div class="px-6 space-y-8 pb-32">
+      {projects.map((project) => (
+        <div class="flex flex-col">
+          <div class="h-64 mb-4">
+            <ImagePlaceholder />
+          </div>
+          <h3 class="text-[#5576e8] text-xl mb-2">{project.title}</h3>
+          <p class="text-[#2f333e] text-base leading-relaxed">{project.description}</p>
+        </div>
+      ))}
+    </div>
+
+    <!-- TODO: <FooterMobile /> — pendiente de migrar (debe ocupar 100dvh) -->
+    <section class="h-[100dvh] border-t border-[#2f333e]/10 flex items-center justify-center text-[#2f333e]/40 text-sm">
+      Footer pendiente de migrar
+    </section>
+  </div>
+</Layout>

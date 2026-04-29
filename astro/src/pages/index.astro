@@ -1,0 +1,80 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const projects = [
+  { title: 'Filmin', slug: 'filmin', rotation: -2 },
+  { title: 'Zumo de fetos', slug: 'zumo-de-fetos', rotation: 1 },
+  { title: 'Rainbox', slug: 'rainbox', rotation: -1 },
+];
+---
+
+<Layout title="Rudy Chávez | Astro Preview">
+  <main class="min-h-dvh px-6 md:px-16 py-16 max-w-6xl mx-auto">
+    <header class="mb-20">
+      <p class="text-sm tracking-wide uppercase text-[#d42b57] mb-4">
+        Astro preview · página de prueba
+      </p>
+      <h1 class="text-5xl md:text-7xl font-normal leading-[0.95] mb-6">
+        Hola, soy <span class="italic">Rudy</span>.
+      </h1>
+      <p class="text-xl md:text-2xl max-w-2xl text-[#2f333e]/80">
+        Esta es la primera página de prueba en Astro. Misma tipografía
+        (Mint Grotesk), mismos design tokens, mismo background.
+      </p>
+    </header>
+
+    <section class="mb-20">
+      <h2 class="text-3xl md:text-4xl mb-8">Design tokens</h2>
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div class="aspect-square rounded-lg bg-[#5576e8] flex items-end p-3 text-white text-xs">
+          primary-blue
+        </div>
+        <div class="aspect-square rounded-lg bg-[#d42b57] flex items-end p-3 text-white text-xs">
+          raspberry
+        </div>
+        <div class="aspect-square rounded-lg bg-[#76e384] flex items-end p-3 text-[#2f333e] text-xs">
+          lima
+        </div>
+        <div class="aspect-square rounded-lg bg-[#2f333e] flex items-end p-3 text-white text-xs">
+          gunmetal
+        </div>
+        <div class="aspect-square rounded-lg bg-[#f7f3e8] border border-[#2f333e]/15 flex items-end p-3 text-[#2f333e] text-xs">
+          floral
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-20">
+      <h2 class="text-3xl md:text-4xl mb-8">Proyectos (placeholder)</h2>
+      <div class="grid md:grid-cols-3 gap-6">
+        {projects.map((p) => (
+          <article
+            class="aspect-[4/5] rounded-xl bg-white/40 border border-[#2f333e]/10 p-5 flex flex-col justify-between hover:bg-white/70 transition-colors"
+            style={`transform: rotate(${p.rotation}deg);`}
+          >
+            <span class="text-xs uppercase tracking-wide text-[#d42b57]">
+              /{p.slug}
+            </span>
+            <h3 class="text-2xl">{p.title}</h3>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="mb-20">
+      <h2 class="text-3xl md:text-4xl mb-6">Tipografía</h2>
+      <p class="text-lg leading-relaxed max-w-2xl">
+        Texto regular en Mint Grotesk con feature settings activadas.
+        <em>También hay itálica disponible.</em> Selecciona este texto
+        para ver la selección custom en color lima.
+      </p>
+    </section>
+
+    <footer class="border-t border-[#2f333e]/10 pt-8 text-sm text-[#2f333e]/60">
+      <p>
+        Generado por Astro · build estático · servible en cualquier hosting
+        (incluyendo Plesk) sin Node.js corriendo.
+      </p>
+    </footer>
+  </main>
+</Layout>

@@ -1,0 +1,30 @@
+---
+import '../styles/global.css';
+import UnderConstructionBanner from '../components/UnderConstructionBanner.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Rudy Chávez | Designer & Developer',
+  description = 'Rudy Chávez - Portfolio and projects',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+  </head>
+  <body class="antialiased overflow-x-hidden">
+    <UnderConstructionBanner />
+    <slot />
+  </body>
+</html>

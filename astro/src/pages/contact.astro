@@ -1,0 +1,54 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+// TODO al migrar: en esta página los enlaces (email) deben cambiar a color
+// lima (#76e384) en hover, no al azul global. El hover global actual se ve
+// invisible sobre el fondo azul. Solución: regla scoped en esta página o
+// clase utilitaria tipo `hover:text-[#76e384]!` en el <a>.
+---
+
+<Layout title="Contacto | Rudy Chávez">
+  <!-- Desktop View -->
+  <div class="hidden md:block w-full">
+    <section class="bg-[#5576e8] h-[100dvh] flex flex-col items-center justify-center">
+      <div class="text-center space-y-12">
+        <h1 class="text-[#f7f3e8]! text-8xl">Contacto</h1>
+        <div class="space-y-6">
+          <p class="text-[#f7f3e8] text-5xl">
+            <a href="mailto:hi@rudychavez.es">hi@rudychavez.es</a>
+          </p>
+          <p class="text-[#f7f3e8] text-3xl">
+            Si te cuadra, escríbeme
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TODO: <FooterDesktop /> — pendiente de migrar (debe ocupar 100dvh) -->
+    <section class="h-[100dvh] border-t border-[#2f333e]/10 flex items-center justify-center text-[#2f333e]/40 text-sm bg-[#f7f3e8]">
+      Footer pendiente de migrar
+    </section>
+  </div>
+
+  <!-- Mobile View -->
+  <div class="md:hidden w-full">
+    <section class="bg-[#5576e8] h-[100dvh] flex flex-col items-center justify-center py-24 px-6">
+      <div class="space-y-8 text-center">
+        <h1 class="text-[#f7f3e8]! text-5xl">Contacto</h1>
+        <div class="space-y-4">
+          <p class="text-[#f7f3e8] text-3xl">
+            <a href="mailto:hi@rudychavez.es">hi@rudychavez.es</a>
+          </p>
+          <p class="text-[#f7f3e8] text-xl">
+            Si te cuadra, escríbeme
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TODO: <FooterMobile /> — pendiente de migrar (debe ocupar 100dvh) -->
+    <section class="h-[100dvh] border-t border-[#2f333e]/10 flex items-center justify-center text-[#2f333e]/40 text-sm bg-[#f7f3e8]">
+      Footer pendiente de migrar
+    </section>
+  </div>
+</Layout>

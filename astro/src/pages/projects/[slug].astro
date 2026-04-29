@@ -1,0 +1,50 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+// Astro genera estáticamente una página por cada entrada del array.
+// En build, esto produce: /projects/filmin/index.html, /projects/rainbox/index.html,
+// /projects/zumo-de-fetos/index.html
+//
+// NOTA: Si en el futuro algún proyecto necesita estructura totalmente única,
+// crea un archivo explícito (ej: src/pages/projects/filmin.astro) — Astro
+// prioriza el archivo explícito sobre [slug].astro automáticamente.
+export async function getStaticPaths() {
+  return [
+    { params: { slug: 'filmin' }, props: { title: 'Filmin' } },
+    { params: { slug: 'rainbox' }, props: { title: 'Rainbox' } },
+    { params: { slug: 'zumo-de-fetos' }, props: { title: 'Zumo de Fetos' } },
+  ];
+}
+
+const { title } = Astro.props;
+---
+
+<Layout title={`${title} | Rudy Chávez`}>
+  <!-- Desktop -->
+  <div class="hidden md:block w-full">
+    <section class="bg-[#f7f3e8] h-[100dvh] flex items-center justify-center px-12">
+      <h1 class="text-[#5576e8] text-8xl leading-tight text-center">
+        Próximamente
+      </h1>
+    </section>
+
+    <!-- TODO: <FooterDesktop /> — pendiente de migrar (debe ocupar 100dvh) -->
+    <section class="h-[100dvh] border-t border-[#2f333e]/10 flex items-center justify-center text-[#2f333e]/40 text-sm bg-[#f7f3e8]">
+      Footer pendiente de migrar
+    </section>
+  </div>
+
+  <!-- Mobile -->
+  <div class="md:hidden w-full">
+    <section class="bg-[#f7f3e8] h-[100dvh] flex items-center justify-center px-6">
+      <h1 class="text-[#5576e8] text-5xl leading-tight text-center">
+        Próximamente
+      </h1>
+    </section>
+
+    <!-- TODO: <FooterMobile /> — pendiente de migrar (debe ocupar 100dvh) -->
+    <section class="h-[100dvh] border-t border-[#2f333e]/10 flex items-center justify-center text-[#2f333e]/40 text-sm bg-[#f7f3e8]">
+      Footer pendiente de migrar
+    </section>
+  </div>
+</Layout>

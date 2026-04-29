@@ -1,0 +1,14 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<div
+  class={`w-full h-full bg-[#5576e8] rounded-[1rem] ${className}`}
+  aria-label="Imagen en preparación"
+  role="img"
+>
+</div>
