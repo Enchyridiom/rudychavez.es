@@ -117,6 +117,7 @@ const pillClass =
 
   if (pill && overlay && backdrop && closeBtn && upBtn && downBtn) {
     let menuOpen = false;
+    const pillLabel = pill.querySelector<HTMLSpanElement>('span');
 
     const applyState = () => {
       if (menuOpen) {
@@ -133,11 +134,24 @@ const pillClass =
         backdrop.style.opacity = '0';
         backdrop.style.pointerEvents = 'none';
         document.body.style.overflow = '';
+        // Restaurar el texto "Menu" para el siguiente snapshot/render
+        if (pillLabel) pillLabel.style.opacity = '';
       }
     };
 
     const toggle = () => {
-      menuOpen = !menuOpen;
+      const willOpen = !menuOpen;
+
+      // Al ABRIR: ocultar el texto "Menu" ANTES de capturar el snapshot.
+      // El snapshot OLD se escala junto al contenedor durante el morph;
+      // si la pastilla no tiene texto al ser capturada, no hay nada que
+      // se vea creciendo. La pastilla mantiene su anchura porque el span
+      // sigue ocupando espacio (opacity 0, no display:none).
+      if (willOpen && pillLabel) {
+        pillLabel.style.opacity = '0';
+      }
+
+      menuOpen = willOpen;
 
       // View Transitions API: si el navegador la soporta, encapsulamos el
       // cambio de DOM dentro de startViewTransition para que interpole
@@ -179,7 +193,7 @@ const pillClass =
 <style>
   /* Morph del contenedor: 0.95s easeInQuad (lento al inicio, acelera al final). */
   ::view-transition-group(nav-morph) {
-    animation-duration: 0.95s;
+    animation-duration: 0.85s;
     animation-timing-function: cubic-bezier(0.55, 0.085, 0.68, 0.53);
   }
 
@@ -187,13 +201,13 @@ const pillClass =
      fade-out rápido para que el texto "Menu" o los links no se vean
      escalándose junto al contenedor durante el morph. */
   ::view-transition-old(nav-morph) {
-    animation-duration: 0.25s;
+    animation-duration: 0.6s;
     animation-timing-function: ease-out;
   }
 
   /* Snapshot del estado nuevo: fade-in sincronizado con el morph. */
   ::view-transition-new(nav-morph) {
-    animation-duration: 0.95s;
+    animation-duration: 0.85s;
     animation-timing-function: cubic-bezier(0.55, 0.085, 0.68, 0.53);
   }
 
@@ -213,11 +227,11 @@ const pillClass =
     animation: menu-item-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
-  [data-nav-overlay].animate-stagger nav a:nth-child(1) { animation-delay: 0.70s; }
-  [data-nav-overlay].animate-stagger nav a:nth-child(2) { animation-delay: 0.78s; }
-  [data-nav-overlay].animate-stagger nav a:nth-child(3) { animation-delay: 0.86s; }
-  [data-nav-overlay].animate-stagger nav a:nth-child(4) { animation-delay: 0.94s; }
-  [data-nav-overlay].animate-stagger [data-nav-close]   { animation-delay: 1.05s; }
+  [data-nav-overlay].animate-stagger nav a:nth-child(1) { animation-delay: 0.25s; }
+  [data-nav-overlay].animate-stagger nav a:nth-child(2) { animation-delay: 0.33s; }
+  [data-nav-overlay].animate-stagger nav a:nth-child(3) { animation-delay: 0.41s; }
+  [data-nav-overlay].animate-stagger nav a:nth-child(4) { animation-delay: 0.49s; }
+  [data-nav-overlay].animate-stagger [data-nav-close]   { animation-delay: 0.60s; }
 
   @keyframes menu-item-in {
     to {
