@@ -177,16 +177,17 @@ const pillClass =
 </script>
 
 <style>
-  /* Customiza la duración y easing del morph nativo.
-     0.55s + cubic-bezier ≈ power3.inOut de GSAP. */
+  /* Morph: empieza lento, acelera al final (easeInQuad).
+     Duración: 0.85s para que el morph sea perceptible y no atropellado. */
   ::view-transition-group(nav-morph) {
-    animation-duration: 0.55s;
-    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+    animation-duration: 0.85s;
+    animation-timing-function: cubic-bezier(0.55, 0.085, 0.68, 0.53);
   }
 
-  /* El cross-fade default de los pseudos old/new dura lo mismo */
+  /* Cross-fade del contenido (pill label ↔ menu links) sincronizado */
   ::view-transition-old(nav-morph),
   ::view-transition-new(nav-morph) {
-    animation-duration: 0.55s;
+    animation-duration: 0.85s;
+    animation-timing-function: cubic-bezier(0.55, 0.085, 0.68, 0.53);
   }
 </style>
