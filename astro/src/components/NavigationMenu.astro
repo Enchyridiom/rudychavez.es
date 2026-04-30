@@ -122,14 +122,14 @@ const pillClass =
       if (menuOpen) {
         pill.classList.add('hidden');
         overlay.classList.remove('hidden');
-        overlay.classList.add('flex');
+        overlay.classList.add('flex', 'animate-stagger');
         backdrop.style.opacity = '1';
         backdrop.style.pointerEvents = 'auto';
         document.body.style.overflow = 'hidden';
       } else {
         pill.classList.remove('hidden');
         overlay.classList.add('hidden');
-        overlay.classList.remove('flex');
+        overlay.classList.remove('flex', 'animate-stagger');
         backdrop.style.opacity = '0';
         backdrop.style.pointerEvents = 'none';
         document.body.style.overflow = '';
@@ -177,17 +177,52 @@ const pillClass =
 </script>
 
 <style>
-  /* Morph: empieza lento, acelera al final (easeInQuad).
-     Duración: 0.85s para que el morph sea perceptible y no atropellado. */
+  /* Morph del contenedor: 0.95s easeInQuad (lento al inicio, acelera al final). */
   ::view-transition-group(nav-morph) {
-    animation-duration: 0.85s;
+    animation-duration: 0.95s;
     animation-timing-function: cubic-bezier(0.55, 0.085, 0.68, 0.53);
   }
 
-  /* Cross-fade del contenido (pill label ↔ menu links) sincronizado */
-  ::view-transition-old(nav-morph),
+  /* Snapshot del estado anterior (pill al abrir, overlay al cerrar):
+     fade-out rápido para que el texto "Menu" o los links no se vean
+     escalándose junto al contenedor durante el morph. */
+  ::view-transition-old(nav-morph) {
+    animation-duration: 0.25s;
+    animation-timing-function: ease-out;
+  }
+
+  /* Snapshot del estado nuevo: fade-in sincronizado con el morph. */
   ::view-transition-new(nav-morph) {
-    animation-duration: 0.85s;
+    animation-duration: 0.95s;
     animation-timing-function: cubic-bezier(0.55, 0.085, 0.68, 0.53);
+  }
+
+  /* Stagger de los enlaces del overlay.
+     Estado inicial: invisibles + ligeramente desplazados.
+     Cuando se aplica .animate-stagger, cada enlace anima con delay
+     escalonado que arranca a 0.7s (ligeramente antes de que el morph
+     acabe a 0.95s) para encadenar sin pausa. */
+  [data-nav-overlay] nav a,
+  [data-nav-overlay] [data-nav-close] {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  [data-nav-overlay].animate-stagger nav a,
+  [data-nav-overlay].animate-stagger [data-nav-close] {
+    animation: menu-item-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  [data-nav-overlay].animate-stagger nav a:nth-child(1) { animation-delay: 0.70s; }
+  [data-nav-overlay].animate-stagger nav a:nth-child(2) { animation-delay: 0.78s; }
+  [data-nav-overlay].animate-stagger nav a:nth-child(3) { animation-delay: 0.86s; }
+  [data-nav-overlay].animate-stagger nav a:nth-child(4) { animation-delay: 0.94s; }
+  [data-nav-overlay].animate-stagger [data-nav-close]   { animation-delay: 1.05s; }
+
+  @keyframes menu-item-in {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 </style>
