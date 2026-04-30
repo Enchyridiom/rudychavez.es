@@ -1,17 +1,20 @@
 ---
 // NavigationMenu.astro — variante up-down (única usada en páginas internas)
 //
-// Migración del original Next.js que usaba GSAP timeline para el morph.
-// Aquí el morph pastilla→overlay se hace con View Transitions API:
-// pill y overlay comparten `view-transition-name: nav-morph`, y al hacer
-// `display: none` en uno + visible el otro dentro de `startViewTransition`,
-// el navegador interpola posición, tamaño y border-radius nativamente.
+// Migración del original Next.js + GSAP. El morph se hace ahora con
+// CSS transitions sobre un único elemento vivo (data-nav-morph):
 //
-// Coste: ~0kB de JS de animación (solo la API nativa). El resto es CSS.
+//   1. JS lee la posición real de la pastilla con getBoundingClientRect()
+//   2. Posiciona el morph-box exactamente sobre la pastilla, sin transición
+//   3. Fuerza un reflow y restaura la transición CSS
+//   4. Cambia los estilos a la geometría del overlay
+//   5. El navegador interpola width/height/left/top/border-radius continuamente
+//
+// Mismo planteamiento del original (animar propiedades CSS reales sobre un
+// elemento vivo) pero sin GSAP. Coste: ~50 líneas de JS, 0kB de librería.
 //
 // TODOs futuros si se necesitan:
 //   - Variantes back-forward y full
-//   - Stagger animado de los enlaces del overlay al entrar
 //   - tone='footer' aún no usado (subpáginas siempre default)
 
 interface Props {
@@ -31,7 +34,7 @@ const pillClass =
     : 'bg-[#d42b57] text-[#f7f3e8] hover:bg-[#5576e8] focus-visible:ring-[#5576e8]';
 ---
 
-<!-- Backdrop con blur, oculto por defecto -->
+<!-- Backdrop -->
 <div
   data-nav-backdrop
   class="fixed inset-0 z-40 bg-[#f7f3e8]/40 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300"
@@ -46,7 +49,7 @@ const pillClass =
       type="button"
       aria-label="Ir arriba"
       class:list={[
-        'w-12 h-12 rounded-full flex items-center justify-center select-none transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2',
+        'w-12 h-12 rounded-full flex items-center justify-center select-none transition duration-150 focus-visible:outline-none focus-visible:ring-2',
         arrowClass,
       ]}
     >
@@ -58,10 +61,9 @@ const pillClass =
       type="button"
       aria-label="Abrir menú"
       class:list={[
-        'h-12 px-6 rounded-full flex items-center justify-center select-none transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2',
+        'h-12 px-6 rounded-full flex items-center justify-center select-none transition duration-150 focus-visible:outline-none focus-visible:ring-2',
         pillClass,
       ]}
-      style="view-transition-name: nav-morph;"
     >
       <span class="text-base">Menu</span>
     </button>
@@ -71,7 +73,7 @@ const pillClass =
       type="button"
       aria-label="Ir abajo"
       class:list={[
-        'w-12 h-12 rounded-full flex items-center justify-center select-none transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2',
+        'w-12 h-12 rounded-full flex items-center justify-center select-none transition duration-150 focus-visible:outline-none focus-visible:ring-2',
         arrowClass,
       ]}
     >
@@ -80,13 +82,13 @@ const pillClass =
   </div>
 </div>
 
-<!-- Overlay: 80vw × 70dvh centrado. display:none por defecto.
-     Comparte view-transition-name con la pastilla: el navegador
-     interpola entre ambos cuando se hace startViewTransition. -->
+<!-- Morph-box: el único elemento que viaja. display:none hasta abrir.
+     JS lo posiciona inline (left/top/width/height/border-radius) en
+     dos pasos: primero igualando la pastilla, luego al overlay final.
+     CSS transition interpola entre ambos estados. -->
 <div
-  data-nav-overlay
-  class="fixed top-[15dvh] left-[10vw] w-[80vw] h-[70dvh] z-50 bg-[#d42b57] text-[#f7f3e8] rounded-3xl flex-col items-center justify-center hidden"
-  style="view-transition-name: nav-morph;"
+  data-nav-morph
+  class="fixed z-50 bg-[#d42b57] text-[#f7f3e8] flex-col items-center justify-center hidden overflow-hidden"
 >
   <div class="w-full h-full flex flex-col items-center justify-center px-8">
     <nav class="flex flex-col items-center gap-8">
@@ -109,63 +111,113 @@ const pillClass =
 
 <script>
   const pill = document.querySelector<HTMLButtonElement>('[data-nav-pill]');
-  const overlay = document.querySelector<HTMLDivElement>('[data-nav-overlay]');
+  const morph = document.querySelector<HTMLDivElement>('[data-nav-morph]');
   const backdrop = document.querySelector<HTMLDivElement>('[data-nav-backdrop]');
   const closeBtn = document.querySelector<HTMLButtonElement>('[data-nav-close]');
   const upBtn = document.querySelector<HTMLButtonElement>('[data-nav-up]');
   const downBtn = document.querySelector<HTMLButtonElement>('[data-nav-down]');
 
-  if (pill && overlay && backdrop && closeBtn && upBtn && downBtn) {
-    let menuOpen = false;
-    const pillLabel = pill.querySelector<HTMLSpanElement>('span');
+  if (pill && morph && backdrop && closeBtn && upBtn && downBtn) {
+    // Mantener este valor sincronizado con --nav-morph-duration en el CSS
+    const TRANSITION_MS = 850;
 
-    const applyState = () => {
-      if (menuOpen) {
-        pill.classList.add('hidden');
-        overlay.classList.remove('hidden');
-        overlay.classList.add('flex', 'animate-stagger');
-        backdrop.style.opacity = '1';
-        backdrop.style.pointerEvents = 'auto';
-        document.body.style.overflow = 'hidden';
-      } else {
-        pill.classList.remove('hidden');
-        overlay.classList.add('hidden');
-        overlay.classList.remove('flex', 'animate-stagger');
-        backdrop.style.opacity = '0';
-        backdrop.style.pointerEvents = 'none';
-        document.body.style.overflow = '';
-        // Restaurar el texto "Menu" para el siguiente snapshot/render
-        if (pillLabel) pillLabel.style.opacity = '';
-      }
+    let menuOpen = false;
+    let isAnimating = false;
+
+    // Aplica al morph-box los estilos de la pastilla (geometría inicial).
+    // No transiciona si la propiedad inline `transition` está en 'none'.
+    const setPillState = () => {
+      const rect = pill.getBoundingClientRect();
+      morph.style.left = `${rect.left}px`;
+      morph.style.top = `${rect.top}px`;
+      morph.style.width = `${rect.width}px`;
+      morph.style.height = `${rect.height}px`;
+      morph.style.borderRadius = '9999px';
+    };
+
+    // Aplica los estilos del overlay (geometría final, 80vw × 70dvh centrado).
+    const setOverlayState = () => {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const w = Math.round(vw * 0.8);
+      const h = Math.round(vh * 0.7);
+      morph.style.left = `${Math.round((vw - w) / 2)}px`;
+      morph.style.top = `${Math.round((vh - h) / 2)}px`;
+      morph.style.width = `${w}px`;
+      morph.style.height = `${h}px`;
+      morph.style.borderRadius = '24px';
+    };
+
+    const open = () => {
+      if (isAnimating) return;
+      isAnimating = true;
+      menuOpen = true;
+
+      // 1. Hacer visible el morph-box sin transición y posicionarlo
+      //    EXACTAMENTE sobre la pastilla.
+      morph.style.transition = 'none';
+      morph.classList.remove('hidden');
+      morph.classList.add('flex');
+      setPillState();
+
+      // 2. Ocultar la pastilla (instantáneo).
+      pill.style.opacity = '0';
+      pill.style.pointerEvents = 'none';
+
+      // 3. Forzar reflow para que los estilos anteriores se "asienten"
+      //    como estado inicial antes de que cambiemos al final.
+      void morph.offsetWidth;
+
+      // 4. Restaurar la transición CSS y animar a la geometría del overlay.
+      morph.style.transition = '';
+      setOverlayState();
+
+      // 5. Backdrop visible y body lock.
+      backdrop.style.opacity = '1';
+      backdrop.style.pointerEvents = 'auto';
+      document.body.style.overflow = 'hidden';
+
+      // 6. Disparar el stagger del contenido (los items entran con
+      //    delays definidos en CSS para alinearse con el morph).
+      morph.classList.add('animate-stagger');
+
+      // 7. Liberar el flag al finalizar la transición.
+      window.setTimeout(() => {
+        isAnimating = false;
+      }, TRANSITION_MS);
+    };
+
+    const close = () => {
+      if (isAnimating) return;
+      isAnimating = true;
+      menuOpen = false;
+
+      // 1. Quitar el stagger → los items se desvanecen vía la transition
+      //    que tienen definida en CSS (rápida, ~0.25s).
+      morph.classList.remove('animate-stagger');
+
+      // 2. Animar el morph-box de vuelta a la geometría de la pastilla.
+      setPillState();
+
+      // 3. Backdrop fuera y restaurar scroll.
+      backdrop.style.opacity = '0';
+      backdrop.style.pointerEvents = 'none';
+      document.body.style.overflow = '';
+
+      // 4. Al terminar la transición: ocultar el morph-box y restaurar
+      //    la pastilla original a opacidad plena.
+      window.setTimeout(() => {
+        morph.classList.add('hidden');
+        morph.classList.remove('flex');
+        pill.style.opacity = '';
+        pill.style.pointerEvents = '';
+        isAnimating = false;
+      }, TRANSITION_MS);
     };
 
     const toggle = () => {
-      const willOpen = !menuOpen;
-
-      // Al ABRIR: ocultar el texto "Menu" ANTES de capturar el snapshot.
-      // El snapshot OLD se escala junto al contenedor durante el morph;
-      // si la pastilla no tiene texto al ser capturada, no hay nada que
-      // se vea creciendo. La pastilla mantiene su anchura porque el span
-      // sigue ocupando espacio (opacity 0, no display:none).
-      if (willOpen && pillLabel) {
-        pillLabel.style.opacity = '0';
-      }
-
-      menuOpen = willOpen;
-
-      // View Transitions API: si el navegador la soporta, encapsulamos el
-      // cambio de DOM dentro de startViewTransition para que interpole
-      // posición/tamaño/border-radius de pill ↔ overlay automáticamente.
-      const doc = document as Document & {
-        startViewTransition?: (cb: () => void) => unknown;
-      };
-
-      if (doc.startViewTransition) {
-        doc.startViewTransition(applyState);
-      } else {
-        // Fallback (Firefox sin VT, navegadores antiguos): toggle instantáneo
-        applyState();
-      }
+      if (menuOpen) close();
+      else open();
     };
 
     pill.addEventListener('click', toggle);
@@ -191,47 +243,39 @@ const pillClass =
 </script>
 
 <style>
-  /* Morph del contenedor: 0.95s easeInQuad (lento al inicio, acelera al final). */
-  ::view-transition-group(nav-morph) {
-    animation-duration: 0.85s;
-    animation-timing-function: cubic-bezier(0.55, 0.085, 0.68, 0.53);
+  /* Morph genuino: el elemento se anima a sí mismo entre la geometría
+     de la pastilla y la del overlay. CSS transition interpola width,
+     height, left, top y border-radius CONTINUAMENTE sobre el mismo
+     elemento — exactamente lo que hacía el original con GSAP. */
+  [data-nav-morph] {
+    transition-property: width, height, left, top, border-radius;
+    transition-duration: 0.85s;
+    transition-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
   }
 
-  /* Snapshot del estado anterior (pill al abrir, overlay al cerrar):
-     fade-out rápido para que el texto "Menu" o los links no se vean
-     escalándose junto al contenedor durante el morph. */
-  ::view-transition-old(nav-morph) {
-    animation-duration: 0.6s;
-    animation-timing-function: ease-out;
-  }
-
-  /* Snapshot del estado nuevo: fade-in sincronizado con el morph. */
-  ::view-transition-new(nav-morph) {
-    animation-duration: 0.85s;
-    animation-timing-function: cubic-bezier(0.55, 0.085, 0.68, 0.53);
-  }
-
-  /* Stagger de los enlaces del overlay.
-     Estado inicial: invisibles + ligeramente desplazados.
-     Cuando se aplica .animate-stagger, cada enlace anima con delay
-     escalonado que arranca a 0.7s (ligeramente antes de que el morph
-     acabe a 0.95s) para encadenar sin pausa. */
-  [data-nav-overlay] nav a,
-  [data-nav-overlay] [data-nav-close] {
+  /* Estado inicial de los enlaces y del botón cerrar: invisibles y
+     ligeramente desplazados. Tienen además su propia transition para
+     desvanecerse rápido al cerrar (cuando se quita .animate-stagger). */
+  [data-nav-morph] nav a,
+  [data-nav-morph] [data-nav-close] {
     opacity: 0;
     transform: translateY(20px);
+    transition: opacity 0.25s ease-out, transform 0.25s ease-out;
   }
 
-  [data-nav-overlay].animate-stagger nav a,
-  [data-nav-overlay].animate-stagger [data-nav-close] {
+  /* Stagger al abrir: cada item entra con un delay creciente. Los
+     delays empiezan a 0.55s para que lleguen al final del morph
+     (0.85s) ya en mid-animación, encadenando sin pausa. */
+  [data-nav-morph].animate-stagger nav a,
+  [data-nav-morph].animate-stagger [data-nav-close] {
     animation: menu-item-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
-  [data-nav-overlay].animate-stagger nav a:nth-child(1) { animation-delay: 0.25s; }
-  [data-nav-overlay].animate-stagger nav a:nth-child(2) { animation-delay: 0.33s; }
-  [data-nav-overlay].animate-stagger nav a:nth-child(3) { animation-delay: 0.41s; }
-  [data-nav-overlay].animate-stagger nav a:nth-child(4) { animation-delay: 0.49s; }
-  [data-nav-overlay].animate-stagger [data-nav-close]   { animation-delay: 0.60s; }
+  [data-nav-morph].animate-stagger nav a:nth-child(1) { animation-delay: 0.55s; }
+  [data-nav-morph].animate-stagger nav a:nth-child(2) { animation-delay: 0.63s; }
+  [data-nav-morph].animate-stagger nav a:nth-child(3) { animation-delay: 0.71s; }
+  [data-nav-morph].animate-stagger nav a:nth-child(4) { animation-delay: 0.79s; }
+  [data-nav-morph].animate-stagger [data-nav-close]   { animation-delay: 0.90s; }
 
   @keyframes menu-item-in {
     to {
