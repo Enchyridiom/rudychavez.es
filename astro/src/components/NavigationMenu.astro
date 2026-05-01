@@ -119,7 +119,7 @@ const pillClass =
 
   if (pill && morph && backdrop && closeBtn && upBtn && downBtn) {
     // Mantener este valor sincronizado con --nav-morph-duration en el CSS
-    const TRANSITION_MS = 850;
+    const TRANSITION_MS = 300;
 
     let menuOpen = false;
     let isAnimating = false;
@@ -249,8 +249,8 @@ const pillClass =
      elemento — exactamente lo que hacía el original con GSAP. */
   [data-nav-morph] {
     transition-property: width, height, left, top, border-radius;
-    transition-duration: 0.85s;
-    transition-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+    transition-duration: 0.3s;
+    transition-timing-function: cubic-bezier(0.45, 0.14, 0.7, 0.34);
   }
 
   /* Estado inicial de los enlaces y del botón cerrar: invisibles y
@@ -260,7 +260,7 @@ const pillClass =
   [data-nav-morph] [data-nav-close] {
     opacity: 0;
     transform: translateY(20px);
-    transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+    transition: opacity 0.15s ease-out, transform 0.15s ease-out;
   }
 
   /* Stagger al abrir: cada item entra con un delay creciente. Los
@@ -268,14 +268,14 @@ const pillClass =
      (0.85s) ya en mid-animación, encadenando sin pausa. */
   [data-nav-morph].animate-stagger nav a,
   [data-nav-morph].animate-stagger [data-nav-close] {
-    animation: menu-item-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: menu-item-in 0.28s cubic-bezier(0.45, 0.14, 0.7, 0.34) forwards;
   }
 
-  [data-nav-morph].animate-stagger nav a:nth-child(1) { animation-delay: 0.55s; }
-  [data-nav-morph].animate-stagger nav a:nth-child(2) { animation-delay: 0.63s; }
-  [data-nav-morph].animate-stagger nav a:nth-child(3) { animation-delay: 0.71s; }
-  [data-nav-morph].animate-stagger nav a:nth-child(4) { animation-delay: 0.79s; }
-  [data-nav-morph].animate-stagger [data-nav-close]   { animation-delay: 0.90s; }
+  [data-nav-morph].animate-stagger nav a:nth-child(1) { animation-delay: 0.08s; }
+  [data-nav-morph].animate-stagger nav a:nth-child(2) { animation-delay: 0.12s; }
+  [data-nav-morph].animate-stagger nav a:nth-child(3) { animation-delay: 0.16s; }
+  [data-nav-morph].animate-stagger nav a:nth-child(4) { animation-delay: 0.2s; }
+  [data-nav-morph].animate-stagger [data-nav-close]   { animation-delay: 0.24s; }
 
   @keyframes menu-item-in {
     to {
